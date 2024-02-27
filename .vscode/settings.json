@@ -1,0 +1,6 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "c:\\Users\\USER\\Desktop\\EPDA Projects\\javax.servlet-api-4.0.0.jar"
+    ]
+}
