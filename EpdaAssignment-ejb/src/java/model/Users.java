@@ -40,7 +40,7 @@ public class Users extends AbstractUser implements Serializable {
     private String email;
 
     @OneToOne
-    Role role;
+    private Role role;
 
     // Constructor
     public Users() {
@@ -56,12 +56,17 @@ public class Users extends AbstractUser implements Serializable {
     // Used during registration
     public Users(String tmpName, String tmpPass, Boolean register) {
         setName(tmpName);
+        setStatus(1);
         this.password = tmpPass;
 
         // Initialize default value
         if (register) {
             initializeDefaultClassValue();
         }
+    }
+
+    public Role getRole() {
+        return role;
     }
 
     public Long getUserID() {

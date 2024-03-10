@@ -5,6 +5,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -22,15 +23,21 @@
                 </tr>
                 <tr>
                     <td>Password:</td>
-                    <td><input type="text" name="password" size="20"></td>
+                    <td><input type="password" name="password" size="20"></td>
                 </tr>
                 <tr>
                     <td>Confirm Password:</td>
-                    <td><input type="text" name="confirmPass" size="20"></td>
+                    <td><input type="password" name="confirmPass" size="20"></td>
                 </tr>
                 <tr>
                     <td>Role:</td>
-                    <td><input type="text" name="role" size="20"></td>
+                    <td>
+                        <select name="role">
+                            <c:forEach items="${applicationScope.cachedRoles}" var="role">
+                                <option value="${role.getDescription()}">${role.getDescription()}</option>
+                            </c:forEach>
+                        </select>
+                    </td>
                 </tr>
             </table>
             <p><input type="submit" value="Register"></p>

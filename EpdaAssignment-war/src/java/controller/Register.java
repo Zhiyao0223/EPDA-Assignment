@@ -2,7 +2,9 @@ package controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 import javax.ejb.EJB;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -27,15 +29,30 @@ public class Register extends HttpServlet {
     @EJB
     private UsersFacade usersFacade;
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
+    // Get all role related data
+    protected void retrieveRoleData(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Retrieve all roles from the facade
+        List<Role> roles = roleFacade.findAll();
+
+        // Capitalize all first case
+        for (Role role : roles) {
+            String tmp = role.getDescription();
+
+            // Check if description is not empty
+            if (tmp != null && !tmp.isEmpty()) {
+                // Capitalize the first letter
+                role.setDescription(tmp.substring(0, 1).toUpperCase() + tmp.substring(1));
+            }
+        }
+        // Get ServletContext
+        ServletContext servletContext = request.getServletContext();
+
+        // Set DataCache in application scope
+        servletContext.setAttribute("cachedRoles", roles);
+        request.getRequestDispatcher("register.jsp").forward(request, response);
+    }
+
+    // Process form request (POST)
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -54,7 +71,7 @@ public class Register extends HttpServlet {
                 } // Check if confirm pass same with original
 
                 // Set role
-                tmpUser.setRole(roleFacade.findByAttribute("description", request.getParameter("role")));
+                tmpUser.setRole(roleFacade.findByAttribute("description", request.getParameter("role").toLowerCase()));
 
                 // Check if username register before
                 if (usersFacade.findByAttribute("name", tmpUser.getName()) != null) {
@@ -106,7 +123,7 @@ public class Register extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        retrieveRoleData(request, response);
     }
 
     /**

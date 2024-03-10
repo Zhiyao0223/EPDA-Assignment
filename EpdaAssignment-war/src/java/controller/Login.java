@@ -23,15 +23,6 @@ public class Login extends HttpServlet {
     @EJB
     private UsersFacade usersFacade;
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -47,25 +38,51 @@ public class Login extends HttpServlet {
                 }
 
                 // Get object from database, null if invalid
-                Users dbUser = usersFacade.find(tmpUser.getName());
+                Users dbUser = usersFacade.findByAttribute("name", tmpUser.getName());
 
-                // No username found or invalid password
                 if (dbUser == null || !dbUser.getPassword().equals(tmpUser.getPassword())) {
                     throw new Exception("-1");
-                }
+                } // No username found or invalid password
+                else if (dbUser.getStatus() != 0) {
+                    throw new Exception(String.valueOf(dbUser.getStatus()));
+                } // Check if active status
 
-                // If found set session
+                // Set session
                 HttpSession s = request.getSession();
-                s.setAttribute("loginUser", tmpUser);
+                s.setAttribute("user", dbUser);
 
-                request.getRequestDispatcher("index.jsp").include(request, response);
-                out.println("<br><br><br>Hi " + tmpUser.getName() + ", welcome to APU!");
+                response.sendRedirect("index.jsp");
             } catch (Exception e) {
                 request.getRequestDispatcher("login.jsp").include(request, response);
-                out.println(e.getMessage() == "-1" ? "Invalid Username / Password" : "Please Enter Username and Password");
+                out.println(getErrorMessage(e.getMessage()));
             }
         }
 
+    }
+
+    /*
+    Check for relevant error code and return err message
+    @param errCode error code
+    @return error message
+     */
+    private String getErrorMessage(String errCode) {
+        System.out.println("Error Code: " + errCode);
+
+        // Switch case to differenciate err msg
+        switch (errCode) {
+            case "3":
+                return "Account is deleted. Please seek support from admin.";
+            case "2":
+                return "Account is suspended. Please seek support from admin.";
+            case "1":
+                return "Account pending approval from admin.";
+            case "-1":
+                return "Incorrect Username / Password";
+            case "-2":
+                return "Please enter the required field.";
+            default:
+                return "Unknown error.";
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -31,15 +31,39 @@ public class Role implements Serializable {
 
     // Variables
     @Column(name = "description")
-    String description;
+    private String description;
 
     @Column(name = "created_date")
-    Timestamp createdDate;
+    private Timestamp createdDate;
 
     @Column(name = "updated_date")
-    Timestamp updatedDate;
+    private Timestamp updatedDate;
 
     public Role() {
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Timestamp getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Timestamp createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public Timestamp getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(Timestamp updatedDate) {
+        this.updatedDate = updatedDate;
     }
 
     public Long getId() {

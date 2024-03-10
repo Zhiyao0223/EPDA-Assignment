@@ -100,7 +100,6 @@ public class AbstractUser {
     public void initializeDefaultClassValue() {
         this.createdDate = new Timestamp(System.currentTimeMillis());
         this.updatedDate = new Timestamp(System.currentTimeMillis());
-        this.status = 0;
         this.gender = ' ';
     }
 }

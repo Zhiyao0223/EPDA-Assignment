@@ -5,6 +5,12 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!-- Check if set parameters -->
+<% if (request.getParameter("registrationSuccess") != null) {%>
+<script>
+    alert("Registration Success");
+</script>
+<% }%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -22,11 +28,11 @@
                 </tr>
                 <tr>
                     <td>Password:</td>
-                    <td><input type="text" name="password" size="20"></td>
+                    <td><input type="password" name="password" size="20"></td>
                 </tr>
             </table>
             <p><input type="submit" value="Login"></p>
         </form>
-        <p>Don't have an account? <a href="register.jsp">Sign up</a> </p>
+        <p>Don't have an account? <a href="Register">Sign up</a> </p>
     </body>
 </html>
