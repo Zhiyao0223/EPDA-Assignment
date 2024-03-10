@@ -8,21 +8,17 @@ package model;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
 
 /**
  *
  * @author USER
- *
  */
 @Entity
-@Table(name = "Role")
-public class Role implements Serializable {
+public class AnimalType implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -30,16 +26,42 @@ public class Role implements Serializable {
     private Long id;
 
     // Variables
-    @Column(name = "description")
-    String description;
+    private String description;
 
-    @Column(name = "created_date")
-    Timestamp createdDate;
+    private Timestamp createdDate;
+    private Timestamp updatedDate;
 
-    @Column(name = "updated_date")
-    Timestamp updatedDate;
+    public AnimalType() {
+    }
 
-    public Role() {
+    public String getDescription() {
+        return description;
+    }
+
+    public Timestamp getCreatedDate() {
+        return createdDate;
+    }
+
+    public Timestamp getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setCreatedDate(Timestamp createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public void setUpdatedDate(Timestamp updatedDate) {
+        this.updatedDate = updatedDate;
+    }
+
+    public AnimalType(String description, Timestamp createdDate, Timestamp updatedDate) {
+        this.description = description;
+        this.createdDate = createdDate;
+        this.updatedDate = updatedDate;
     }
 
     public Long getId() {
@@ -60,10 +82,10 @@ public class Role implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Role)) {
+        if (!(object instanceof AnimalType)) {
             return false;
         }
-        Role other = (Role) object;
+        AnimalType other = (AnimalType) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -72,7 +94,7 @@ public class Role implements Serializable {
 
     @Override
     public String toString() {
-        return "model.Role[ id=" + id + " ]";
+        return "model.AnimalType[ id=" + id + " ]";
     }
 
 }

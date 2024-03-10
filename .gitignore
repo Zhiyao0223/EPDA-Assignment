@@ -25,3 +25,6 @@ replay_pid*
 /EpdaAssignment-ejb/build/
 /EpdaAssignment-war/build/
 /EpdaAssignment-ejb/dist/
+/build/
+/dist/
+/EpdaAssignment-war/dist/

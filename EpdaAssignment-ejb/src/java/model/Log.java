@@ -6,42 +6,34 @@
 package model;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
- * @author Zhi Yao
  *
- * This class is used as the base class for user and pet
+ * @author USER
  */
 @Entity
-public class BaseUser implements Serializable {
+public class Log implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public Long id;
+    private Long id;
 
-    // Variables
-    String name;
-    char gender;
-
-    LocalDateTime createdDate;
-    LocalDateTime updatedDate;
-
-    int status; // 0 - Active, 1 - Pending Approval, 2 - Suspended, 3 - Deleted
-
-    // Constructor
-    public BaseUser() {
-        this.createdDate = LocalDateTime.now();
-        this.updatedDate = LocalDateTime.now();
+    public Log() {
     }
 
-    // System Generated Functions
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -52,10 +44,10 @@ public class BaseUser implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof BaseUser)) {
+        if (!(object instanceof Log)) {
             return false;
         }
-        BaseUser other = (BaseUser) object;
+        Log other = (Log) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -64,8 +56,7 @@ public class BaseUser implements Serializable {
 
     @Override
     public String toString() {
-        return "model.BaseUser[ id=" + id + " ]";
+        return "model.log[ id=" + id + " ]";
     }
 
-    // Self Function
 }

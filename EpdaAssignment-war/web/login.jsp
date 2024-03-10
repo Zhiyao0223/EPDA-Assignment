@@ -13,16 +13,16 @@
     </head>
     <body>
         <p>Welcome to Paws & Care Veterinary Clinic</p>
-        <br/><br/>
+        <br/>
         <form action="Login" method="POST">
             <table>
                 <tr>
                     <td>Username:</td>
-                    <td><input type="text" name="x" size="20"></td>
+                    <td><input type="text" name="username" size="20"></td>
                 </tr>
                 <tr>
                     <td>Password:</td>
-                    <td><input type="text" name="y" size="20"></td>
+                    <td><input type="text" name="password" size="20"></td>
                 </tr>
             </table>
             <p><input type="submit" value="Login"></p>

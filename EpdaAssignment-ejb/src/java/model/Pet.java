@@ -17,22 +17,24 @@ import javax.persistence.Id;
  */
 @Entity
 public class Pet
-        extends BaseUser implements Serializable {
+        extends AbstractUser implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public Long getId() {
-        return id;
-    }
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long petID;
 
-    public void setId(Long id) {
-        this.id = id;
+    // Variables
+    AnimalType type;
+
+    public Pet() {
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash += (petID != null ? petID.hashCode() : 0);
         return hash;
     }
 
@@ -43,7 +45,7 @@ public class Pet
             return false;
         }
         Pet other = (Pet) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.petID == null && other.petID != null) || (this.petID != null && !this.petID.equals(other.petID))) {
             return false;
         }
         return true;
@@ -51,7 +53,15 @@ public class Pet
 
     @Override
     public String toString() {
-        return "model.Pet[ id=" + id + " ]";
+        return "model.Pet[ id=" + petID + " ]";
+    }
+
+    public Long getPetID() {
+        return petID;
+    }
+
+    public void setPetID(Long petID) {
+        this.petID = petID;
     }
 
 }

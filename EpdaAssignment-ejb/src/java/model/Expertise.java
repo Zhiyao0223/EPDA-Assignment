@@ -6,11 +6,13 @@
 package model;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 /**
  *
@@ -25,17 +27,18 @@ public class Expertise implements Serializable {
     private Long expertiseID;
 
     // Variables
-    User vetID;
+    Users vetID;
+    AnimalType animalType;
 
-    LocalDateTime createdDate;
-    LocalDateTime updatedDate;
+    Timestamp createdDate;
+    Timestamp updatedDate;
 
     int status; // 0 - Enable, 1 - Disable
 
     // Constructor
     public Expertise() {
-        this.createdDate = LocalDateTime.now();
-        this.updatedDate = LocalDateTime.now();
+        this.createdDate = new Timestamp(System.currentTimeMillis());
+        this.updatedDate = new Timestamp(System.currentTimeMillis());
     }
 
     public Long getId() {

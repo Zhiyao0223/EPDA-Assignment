@@ -1,17 +1,17 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import model.Users;
+import model.UsersFacade;
+import service.Validation;
 
 /**
  *
@@ -19,6 +19,9 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "Login", urlPatterns = {"/Login"})
 public class Login extends HttpServlet {
+
+    @EJB
+    private UsersFacade usersFacade;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -32,17 +35,35 @@ public class Login extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+
+        // Check for POST variable
+        Users tmpUser = new Users(request.getParameter("username"), request.getParameter("password"));
+
         try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet Login</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet Login at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+            try {
+                // Check if empty input
+                if (Validation.isEmpty(tmpUser.getName()) || Validation.isEmpty(tmpUser.getPassword())) {
+                    throw new Exception("-2");
+                }
+
+                // Get object from database, null if invalid
+                Users dbUser = usersFacade.find(tmpUser.getName());
+
+                // No username found or invalid password
+                if (dbUser == null || !dbUser.getPassword().equals(tmpUser.getPassword())) {
+                    throw new Exception("-1");
+                }
+
+                // If found set session
+                HttpSession s = request.getSession();
+                s.setAttribute("loginUser", tmpUser);
+
+                request.getRequestDispatcher("index.jsp").include(request, response);
+                out.println("<br><br><br>Hi " + tmpUser.getName() + ", welcome to APU!");
+            } catch (Exception e) {
+                request.getRequestDispatcher("login.jsp").include(request, response);
+                out.println(e.getMessage() == "-1" ? "Invalid Username / Password" : "Please Enter Username and Password");
+            }
         }
 
     }

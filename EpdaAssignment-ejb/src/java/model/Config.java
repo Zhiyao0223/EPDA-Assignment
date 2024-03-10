@@ -8,21 +8,17 @@ package model;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
 
 /**
  *
  * @author USER
- *
  */
 @Entity
-@Table(name = "Role")
-public class Role implements Serializable {
+public class Config implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -30,16 +26,53 @@ public class Role implements Serializable {
     private Long id;
 
     // Variables
-    @Column(name = "description")
-    String description;
+    private String description;
+    private int value;
+    private int status; // 0 - Enable, 1 - Disable
+    private Timestamp createdDate;
+    private Timestamp updatedDate;
 
-    @Column(name = "created_date")
-    Timestamp createdDate;
+    public Config() {
+    }
 
-    @Column(name = "updated_date")
-    Timestamp updatedDate;
+    public String getDescription() {
+        return description;
+    }
 
-    public Role() {
+    public int getValue() {
+        return value;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public Timestamp getCreatedDate() {
+        return createdDate;
+    }
+
+    public Timestamp getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setValue(int value) {
+        this.value = value;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public void setCreatedDate(Timestamp createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public void setUpdatedDate(Timestamp updatedDate) {
+        this.updatedDate = updatedDate;
     }
 
     public Long getId() {
@@ -60,10 +93,10 @@ public class Role implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Role)) {
+        if (!(object instanceof Config)) {
             return false;
         }
-        Role other = (Role) object;
+        Config other = (Config) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -72,7 +105,7 @@ public class Role implements Serializable {
 
     @Override
     public String toString() {
-        return "model.Role[ id=" + id + " ]";
+        return "model.config[ id=" + id + " ]";
     }
 
 }
