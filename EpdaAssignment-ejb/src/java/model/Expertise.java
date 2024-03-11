@@ -8,11 +8,14 @@ package model;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 /**
  *
@@ -27,12 +30,21 @@ public class Expertise implements Serializable {
     private Long expertiseID;
 
     // Variables
+    @ManyToOne
+    @JoinColumn(name = "vet_id", referencedColumnName = "id")
     Users vetID;
+
+    @OneToOne
+    @JoinColumn(name = "animal_type", referencedColumnName = "id")
     AnimalType animalType;
 
+    @Column(name = "created_date")
     Timestamp createdDate;
+
+    @Column(name = "updated_date")
     Timestamp updatedDate;
 
+    @Column(name = "status")
     int status; // 0 - Enable, 1 - Disable
 
     // Constructor

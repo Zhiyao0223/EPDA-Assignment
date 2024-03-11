@@ -1,40 +1,49 @@
 package controller;
 
+import static controller.EditProfile.getErrorMessage;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Set;
 import javax.ejb.EJB;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import model.Users;
 import model.UsersFacade;
 import service.TableName;
-import service.Validation;
 import service.Util;
+import service.Validation;
 
 /**
  *
  * @author USER
  */
-@WebServlet(name = "editProfile", urlPatterns = {"/editProfile"})
-public class EditProfile extends HttpServlet {
+@WebServlet(name = "editStaff", urlPatterns = {"/editStaff"})
+public class EditStaff extends HttpServlet {
 
     @EJB
     private UsersFacade usersFacade;
 
+    protected void retrieveStaffInfo(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        ServletContext servletContext = request.getServletContext();
+        servletContext.setAttribute("editUser", usersFacade.find(Long.parseLong(request.getParameter("userId"))));
+        request.getRequestDispatcher("editStaff.jsp").forward(request, response);
+    }
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+
         // Check for any changes
         Boolean hasChange = false;
 
         // Get existing data and refetch database
         Users currentUser = (Users) request.getSession().getAttribute("user");
         currentUser = usersFacade.find(currentUser.getId());
+
+        Users editUser = usersFacade.find(Long.parseLong(request.getParameter("userid")));
 
         try (PrintWriter out = response.getWriter()) {
             try {
@@ -47,31 +56,23 @@ public class EditProfile extends HttpServlet {
                 };
 
                 // Compare changes
-                if (!request.getParameter("email").trim().equalsIgnoreCase(currentUser.getEmail()) && !Validation.isEmpty(request.getParameter("email"))) {
+                if (!request.getParameter("email").trim().equalsIgnoreCase(editUser.getEmail()) && !Validation.isEmpty(request.getParameter("email"))) {
                     appendedData[0][1] = request.getParameter("email");
-                    currentUser.setEmail(appendedData[0][1]);
-
                     System.out.println("email: " + appendedData[0][1]);
                     hasChange = true;
                 }
-                if (!request.getParameter("dob").equals(currentUser.getDateOfBirth()) && !Validation.isEmpty(request.getParameter("dob"))) {
+                if (!request.getParameter("dob").equals(editUser.getDateOfBirth()) && !Validation.isEmpty(request.getParameter("dob"))) {
                     appendedData[1][1] = request.getParameter("dob");
-                    currentUser.setDateOfBirth(appendedData[1][1]);
-
                     System.out.println("DOB: " + appendedData[1][1]);
                     hasChange = true;
                 }
-                if (!request.getParameter("gender").equals(currentUser.getGender()) && !Validation.isEmpty(request.getParameter("gender"))) {
+                if (!request.getParameter("gender").equals(editUser.getGender()) && !Validation.isEmpty(request.getParameter("gender"))) {
                     appendedData[2][1] = request.getParameter("gender");
-                    currentUser.setGender(appendedData[2][1]);
-
                     System.out.println("gender: " + appendedData[2][1]);
                     hasChange = true;
                 }
-                if (!request.getParameter("phone").trim().equals(currentUser.getPhoneNo()) && !Validation.isEmpty(request.getParameter("phone"))) {
+                if (!request.getParameter("phone").trim().equals(editUser.getPhoneNo()) && !Validation.isEmpty(request.getParameter("phone"))) {
                     appendedData[3][1] = request.getParameter("phone");
-                    currentUser.setPhoneNo(appendedData[3][1]);
-
                     System.out.println("phone: " + currentUser.getPhoneNo() + "," + appendedData[3][1]);
                     hasChange = true;
                 }
@@ -93,19 +94,17 @@ public class EditProfile extends HttpServlet {
                     // Update db
                     // If datetime need convert before update
                     if (changes[0].equals("dateOfBirth")) {
-                        usersFacade.updateByAttribute(TableName.Users.name(), currentUser.getId(), changes[0], Util.dateStringToTimestamp(changes[1]));
+                        usersFacade.updateByAttribute(TableName.Users.name(), editUser.getId(), changes[0], Util.dateStringToTimestamp(changes[1]));
                     } else {
-                        usersFacade.updateByAttribute(TableName.Users.name(), currentUser.getId(), changes[0], changes[1]);
+                        usersFacade.updateByAttribute(TableName.Users.name(), editUser.getId(), changes[0], changes[1]);
                     }
 
-                    // Replace session with new data
-                    request.getSession().setAttribute("user", currentUser);
-
-                    response.sendRedirect("index.jsp?updateSuccess=true");
+                    request.getRequestDispatcher("editStaff.jsp").include(request, response);
+                    out.println("Record modified succesfully.");
                 }
 
             } catch (Exception e) {
-                request.getRequestDispatcher("editProfile.jsp").include(request, response);
+                request.getRequestDispatcher("editStaff.jsp").include(request, response);
                 out.println(getErrorMessage(e.getMessage()));
             }
         }
@@ -135,7 +134,7 @@ public class EditProfile extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        retrieveStaffInfo(request, response);
     }
 
     /**

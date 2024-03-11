@@ -25,7 +25,7 @@ public class AbstractUser {
     private String name;
 
     @Column(name = "gender")
-    private char gender;
+    private String gender;
 
     @Column(name = "created_date")
     private Timestamp createdDate;
@@ -48,7 +48,7 @@ public class AbstractUser {
         initializeDefaultClassValue();
     }
 
-    public AbstractUser(String name, char gender, Timestamp createdDate, Timestamp updatedDate, int status) {
+    public AbstractUser(String name, String gender, Timestamp createdDate, Timestamp updatedDate, int status) {
         this.name = name;
         this.gender = gender;
         this.createdDate = createdDate;
@@ -60,7 +60,7 @@ public class AbstractUser {
         this.name = name;
     }
 
-    public void setGender(char gender) {
+    public void setGender(String gender) {
         this.gender = gender;
     }
 
@@ -80,8 +80,8 @@ public class AbstractUser {
         return name;
     }
 
-    public char getGender() {
-        return gender;
+    public String getGender() {
+        return (gender == null || gender.trim().isEmpty()) ? "-" : gender;
     }
 
     public Timestamp getCreatedDate() {
@@ -100,6 +100,6 @@ public class AbstractUser {
     public void initializeDefaultClassValue() {
         this.createdDate = new Timestamp(System.currentTimeMillis());
         this.updatedDate = new Timestamp(System.currentTimeMillis());
-        this.gender = ' ';
+        this.gender = null;
     }
 }

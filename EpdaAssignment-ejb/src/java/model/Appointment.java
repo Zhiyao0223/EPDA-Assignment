@@ -28,21 +28,22 @@ public class Appointment implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long appointmentID;
+    private Long id;
 
     // Variables
-    private int status = 0; // 0 - Complete, 1 - Pending Vet, 2 - Scheduled, 3 - Cancelled
-
     @OneToOne
     @JoinColumn(name = "working_rota_id", referencedColumnName = "id")
     private WorkingRota schedule;
 
     @OneToOne
-    @Column(name = "id")
+    @JoinColumn(name = "pet_id", referencedColumnName = "id")
     private Pet petID;
 
     @Column(name = "appointment_date")
     private Timestamp appointmentDate;
+
+    @Column(name = "status")
+    private int status = 0; // 0 - Complete, 1 - Pending Vet, 2 - Scheduled, 3 - Cancelled
 
     @Column(name = "created_date")
     private Timestamp createdDate;
@@ -54,7 +55,7 @@ public class Appointment implements Serializable {
     }
 
     public void setAppointmentID(Long appointmentID) {
-        this.appointmentID = appointmentID;
+        this.id = appointmentID;
     }
 
     public void setStatus(int status) {
@@ -86,7 +87,7 @@ public class Appointment implements Serializable {
     }
 
     public Long getAppointmentID() {
-        return appointmentID;
+        return id;
     }
 
     public int getStatus() {
@@ -116,18 +117,10 @@ public class Appointment implements Serializable {
         this.updatedDate = updatedDate;
     }
 
-    public Long getId() {
-        return appointmentID;
-    }
-
-    public void setId(Long id) {
-        this.appointmentID = id;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (appointmentID != null ? appointmentID.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
@@ -138,7 +131,7 @@ public class Appointment implements Serializable {
             return false;
         }
         Appointment other = (Appointment) object;
-        if ((this.appointmentID == null && other.appointmentID != null) || (this.appointmentID != null && !this.appointmentID.equals(other.appointmentID))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -146,7 +139,7 @@ public class Appointment implements Serializable {
 
     @Override
     public String toString() {
-        return "model.Appointment[ id=" + appointmentID + " ]";
+        return "model.Appointment[ id=" + id + " ]";
     }
 
 }

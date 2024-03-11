@@ -6,6 +6,7 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -13,9 +14,10 @@
         <title>Registration</title>
     </head>
     <body>
-        <a href="login.jsp">< Back</a>
+        <a href="${applicationScope.isAddStaff != null ?'ManageStaff' : 'login.jsp'}">< Back</a>
         <br><br><br>
         <form action="Register" method="POST">
+            <input type="text" hidden name="isAddStaff" value="${applicationScope.isAddStaff}">
             <table>
                 <tr>
                     <td>Username:</td>

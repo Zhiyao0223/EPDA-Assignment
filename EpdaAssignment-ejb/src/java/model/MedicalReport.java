@@ -7,10 +7,12 @@ package model;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 /**
@@ -23,16 +25,29 @@ public class MedicalReport implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long reportID;
+    private Long id;
 
     // Variables
     @OneToOne
+    @JoinColumn(name = "appointment", referencedColumnName = "id")
     private Appointment appointment;
+
+    @Column(name = "total_fee")
     private double totalFee;
+
+    @Column(name = "description")
     private String description;
+
+    @Column(name = "type")
     private int type; // 0 - Diagnosis, 1 - Prognosis
+
+    @Column(name = "status")
     private int status;
+
+    @Column(name = "created_date")
     private Timestamp createdDate;
+
+    @Column(name = "updated_date")
     private Timestamp updatedDate;
 
     public MedicalReport() {
@@ -63,7 +78,7 @@ public class MedicalReport implements Serializable {
     }
 
     public Long getReportID() {
-        return reportID;
+        return id;
     }
 
     public Appointment getAppointment() {
@@ -83,7 +98,7 @@ public class MedicalReport implements Serializable {
     }
 
     public void setReportID(Long reportID) {
-        this.reportID = reportID;
+        this.id = reportID;
     }
 
     public void setAppointment(Appointment appointment) {
@@ -102,18 +117,10 @@ public class MedicalReport implements Serializable {
         this.type = type;
     }
 
-    public Long getId() {
-        return reportID;
-    }
-
-    public void setId(Long id) {
-        this.reportID = id;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (reportID != null ? reportID.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
@@ -124,7 +131,7 @@ public class MedicalReport implements Serializable {
             return false;
         }
         MedicalReport other = (MedicalReport) object;
-        if ((this.reportID == null && other.reportID != null) || (this.reportID != null && !this.reportID.equals(other.reportID))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -132,7 +139,7 @@ public class MedicalReport implements Serializable {
 
     @Override
     public String toString() {
-        return "model.DiagnosisReport[ id=" + reportID + " ]";
+        return "model.DiagnosisReport[ id=" + id + " ]";
     }
 
 }

@@ -5,9 +5,15 @@
  */
 package model;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.Query;
 
 /**
  *
@@ -29,6 +35,17 @@ public abstract class AbstractFacade<T> {
 
     public void edit(T entity) {
         getEntityManager().merge(entity);
+    }
+
+    /*
+    Update row by primary key
+     */
+    public void updateByAttribute(String tableName, Object primaryKey, String attribute, Object value) {
+        String jpql = "UPDATE " + tableName + " SET " + attribute + " = :value WHERE ID = :primaryKey";
+        getEntityManager().createQuery(jpql)
+                .setParameter("value", value)
+                .setParameter("primaryKey", primaryKey)
+                .executeUpdate();
     }
 
     public void remove(T entity) {
@@ -77,6 +94,36 @@ public abstract class AbstractFacade<T> {
         cq.select(getEntityManager().getCriteriaBuilder().count(rt));
         javax.persistence.Query q = getEntityManager().createQuery(cq);
         return ((Long) q.getSingleResult()).intValue();
+    }
+
+    // Method to retrieve column names for a given table
+    public String[] getColumnNames(String tableName) throws SQLException {
+        List<String> columnNames = new ArrayList<>();
+
+        Connection connection = null;
+        ResultSet rs = null;
+        try {
+            connection = getEntityManager().unwrap(Connection.class);
+            DatabaseMetaData metaData = connection.getMetaData();
+            rs = metaData.getColumns(null, null, tableName, null);
+
+            while (rs.next()) {
+                columnNames.add(rs.getString("COLUMN_NAME"));
+            }
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+
+        // Convert list to array
+        String[] columnNamesArray = new String[columnNames.size()];
+        columnNamesArray = columnNames.toArray(columnNamesArray);
+
+        return columnNamesArray;
     }
 
 }

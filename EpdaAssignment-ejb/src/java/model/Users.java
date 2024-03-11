@@ -2,6 +2,10 @@ package model;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,14 +21,14 @@ import javax.persistence.Table;
  * This class is for employees and customer
  */
 @Entity
-@Table(name = "Users")
+@Table(name = "USERS")
 public class Users extends AbstractUser implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long userID;
+    private Long id;
 
     // Variables
     @Column(name = "phone_no")
@@ -70,11 +74,11 @@ public class Users extends AbstractUser implements Serializable {
     }
 
     public Long getUserID() {
-        return userID;
+        return id;
     }
 
     public void setUserID(Long userID) {
-        this.userID = userID;
+        this.id = userID;
     }
 
     public String getEmail() {
@@ -93,8 +97,13 @@ public class Users extends AbstractUser implements Serializable {
         this.password = password;
     }
 
-    public void setDateOfBirth(Timestamp dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
+    public void setDateOfBirth(String dateOfBirth) {
+        // Prevent error when parsing date
+        try {
+            this.dateOfBirth = new Timestamp(new SimpleDateFormat("yyyy-MM-dd").parse(dateOfBirth).getTime());
+        } catch (ParseException ex) {
+            Logger.getLogger(Users.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void setRole(Role roleID) {
@@ -109,8 +118,8 @@ public class Users extends AbstractUser implements Serializable {
         return password;
     }
 
-    public Timestamp getDateOfBirth() {
-        return dateOfBirth;
+    public String getDateOfBirth() {
+        return (dateOfBirth == null) ? null : new SimpleDateFormat("yyyy-MM-dd").format(dateOfBirth.getTime());
     }
 
     public Role getRoleID() {
@@ -143,11 +152,11 @@ public class Users extends AbstractUser implements Serializable {
     }
 
     public Long getId() {
-        return userID;
+        return id;
     }
 
     public void setId(Long id) {
-        this.userID = id;
+        this.id = id;
     }
 
 }

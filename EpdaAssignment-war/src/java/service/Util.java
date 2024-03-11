@@ -2,7 +2,9 @@ package service;
 
 import static com.oracle.jrockit.jfr.ContentType.Timestamp;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.LocalTime;
+import java.util.Date;
 import java.util.Random;
 
 /**
@@ -52,6 +54,22 @@ public class Util {
     // Return current timestamp
     public static Timestamp getCurrentTimestamp() {
         return new Timestamp(System.currentTimeMillis());
+    }
+
+    // Convert timestamp to date string
+    public static String timestampToDateString(Timestamp t) {
+        return (t == null) ? null : new SimpleDateFormat("yyyy-MM-dd").format(t.getTime());
+    }
+
+    // Covert date string to timestamp
+    public static Timestamp dateStringToTimestamp(String t) {
+        try {
+            return (t == null) ? null : new Timestamp(new SimpleDateFormat("yyyy-MM-dd").parse(t).getTime());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
     }
 
 }

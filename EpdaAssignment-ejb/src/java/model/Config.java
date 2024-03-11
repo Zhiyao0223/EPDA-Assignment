@@ -8,6 +8,7 @@ package model;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -26,10 +27,19 @@ public class Config implements Serializable {
     private Long id;
 
     // Variables
+    @Column(name = "description")
     private String description;
+
+    @Column(name = "value")
     private int value;
+
+    @Column(name = "status")
     private int status; // 0 - Enable, 1 - Disable
+
+    @Column(name = "created_date")
     private Timestamp createdDate;
+
+    @Column(name = "updated_date")
     private Timestamp updatedDate;
 
     public Config() {

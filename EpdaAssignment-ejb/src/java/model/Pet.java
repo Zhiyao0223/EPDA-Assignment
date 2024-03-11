@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 /**
@@ -24,12 +25,15 @@ public class Pet
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long petID;
+    private Long id;
 
     // Variables
+    @OneToOne
+    @JoinColumn(name = "type", referencedColumnName = "id")
     AnimalType type;
 
     @OneToOne
+    @JoinColumn(name = "cust_id", referencedColumnName = "id")
     private Users custID;
 
     public Pet() {
@@ -54,7 +58,7 @@ public class Pet
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (petID != null ? petID.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
@@ -65,7 +69,7 @@ public class Pet
             return false;
         }
         Pet other = (Pet) object;
-        if ((this.petID == null && other.petID != null) || (this.petID != null && !this.petID.equals(other.petID))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -73,15 +77,15 @@ public class Pet
 
     @Override
     public String toString() {
-        return "model.Pet[ id=" + petID + " ]";
+        return "model.Pet[ id=" + id + " ]";
     }
 
     public Long getPetID() {
-        return petID;
+        return id;
     }
 
     public void setPetID(Long petID) {
-        this.petID = petID;
+        this.id = petID;
     }
 
 }

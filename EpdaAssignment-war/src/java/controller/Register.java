@@ -44,11 +44,18 @@ public class Register extends HttpServlet {
                 role.setDescription(tmp.substring(0, 1).toUpperCase() + tmp.substring(1));
             }
         }
+
         // Get ServletContext
         ServletContext servletContext = request.getServletContext();
 
         // Set DataCache in application scope
         servletContext.setAttribute("cachedRoles", roles);
+
+        // Check if come from add staff
+        if (request.getParameter("addStaff") != null) {
+            servletContext.setAttribute("isAddStaff", "true");
+        }
+
         request.getRequestDispatcher("register.jsp").forward(request, response);
     }
 
@@ -59,6 +66,7 @@ public class Register extends HttpServlet {
 
         // Initialize tmp variable
         Users tmpUser = new Users(request.getParameter("username"), request.getParameter("password"), true);
+        Boolean isAddStaff = !Validation.isEmpty(request.getParameter("isAddStaff"));
 
         try (PrintWriter out = response.getWriter()) {
             try {
@@ -78,11 +86,21 @@ public class Register extends HttpServlet {
                     throw new Exception("-1");
                 }
 
+                // Change user status if add by manager
+                if (isAddStaff) {
+                    tmpUser.setStatus(0);
+                }
+
                 // Create record in users table
                 usersFacade.create(tmpUser);
 
                 // Go to login page
-                response.sendRedirect("login.jsp?registrationSuccess=true");
+                if (isAddStaff) {
+                    request.getRequestDispatcher("register.jsp").include(request, response);
+                    out.println(tmpUser.getName() + " is successful added as a " + tmpUser.getRole().getDescription());
+                } else {
+                    response.sendRedirect("login.jsp?registrationSuccess=true");
+                }
             } catch (Exception e) {
                 request.getRequestDispatcher("register.jsp").include(request, response);
                 out.println(getErrorMessage(e.getMessage()));
