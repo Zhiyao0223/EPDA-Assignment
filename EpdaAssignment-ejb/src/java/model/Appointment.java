@@ -8,17 +8,21 @@ package model;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 /**
  *
  * @author USER
  */
 @Entity
+@Table(name = "Appointment")
 public class Appointment implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -30,16 +34,20 @@ public class Appointment implements Serializable {
     private int status = 0; // 0 - Complete, 1 - Pending Vet, 2 - Scheduled, 3 - Cancelled
 
     @OneToOne
-    private Users vetID;
+    @JoinColumn(name = "working_rota_id", referencedColumnName = "id")
+    private WorkingRota schedule;
 
     @OneToOne
-    private Users custID;
-
-    @OneToOne
+    @Column(name = "id")
     private Pet petID;
 
+    @Column(name = "appointment_date")
     private Timestamp appointmentDate;
+
+    @Column(name = "created_date")
     private Timestamp createdDate;
+
+    @Column(name = "updated_date")
     private Timestamp updatedDate;
 
     public Appointment() {
@@ -53,16 +61,16 @@ public class Appointment implements Serializable {
         this.status = status;
     }
 
-    public void setVetID(Users vetID) {
-        this.vetID = vetID;
-    }
-
-    public void setCustID(Users custID) {
-        this.custID = custID;
-    }
-
     public void setPetID(Pet petID) {
         this.petID = petID;
+    }
+
+    public WorkingRota getSchedule() {
+        return schedule;
+    }
+
+    public void setSchedule(WorkingRota schedule) {
+        this.schedule = schedule;
     }
 
     public void setAppointmentDate(Timestamp appointmentDate) {
@@ -85,14 +93,6 @@ public class Appointment implements Serializable {
         return status;
     }
 
-    public Users getVetID() {
-        return vetID;
-    }
-
-    public Users getCustID() {
-        return custID;
-    }
-
     public Pet getPetID() {
         return petID;
     }
@@ -109,9 +109,7 @@ public class Appointment implements Serializable {
         return updatedDate;
     }
 
-    public Appointment(Users vetID, Users custID, Pet petID, Timestamp appointmentDate, Timestamp createdDate, Timestamp updatedDate) {
-        this.vetID = vetID;
-        this.custID = custID;
+    public Appointment(Pet petID, Timestamp appointmentDate, Timestamp createdDate, Timestamp updatedDate) {
         this.petID = petID;
         this.appointmentDate = appointmentDate;
         this.createdDate = createdDate;

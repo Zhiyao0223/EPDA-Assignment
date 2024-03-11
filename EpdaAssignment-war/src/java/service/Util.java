@@ -1,5 +1,7 @@
 package service;
 
+import static com.oracle.jrockit.jfr.ContentType.Timestamp;
+import java.sql.Timestamp;
 import java.time.LocalTime;
 import java.util.Random;
 
@@ -45,6 +47,11 @@ public class Util {
         } else {
             return "Good evening!";
         }
+    }
+
+    // Return current timestamp
+    public static Timestamp getCurrentTimestamp() {
+        return new Timestamp(System.currentTimeMillis());
     }
 
 }

@@ -6,10 +6,13 @@
 package model;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 /**
@@ -17,55 +20,52 @@ import javax.persistence.OneToOne;
  * @author USER
  */
 @Entity
-public class Pet
-        extends AbstractUser implements Serializable {
+public class WorkingRota implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long petID;
-
-    // Variables
-    AnimalType type;
+    private Long id;
 
     @OneToOne
-    private Users custID;
+    @JoinColumn(name = "staff_id", referencedColumnName = "id")
+    Users staffId;
 
-    public Pet() {
+    @Column(name = "working_time")
+    Timestamp workingTime;
+
+    @Column(name = "status")
+    int status; // 0 - Active, 1 - Cancelled
+
+    @Column(name = "created_date")
+    Timestamp createdDate;
+
+    @Column(name = "updated_date")
+    Timestamp updatedDate;
+
+    public Long getId() {
+        return id;
     }
 
-    public AnimalType getType() {
-        return type;
-    }
-
-    public Users getCustID() {
-        return custID;
-    }
-
-    public void setType(AnimalType type) {
-        this.type = type;
-    }
-
-    public void setCustID(Users custID) {
-        this.custID = custID;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (petID != null ? petID.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Pet)) {
+        if (!(object instanceof WorkingRota)) {
             return false;
         }
-        Pet other = (Pet) object;
-        if ((this.petID == null && other.petID != null) || (this.petID != null && !this.petID.equals(other.petID))) {
+        WorkingRota other = (WorkingRota) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -73,15 +73,7 @@ public class Pet
 
     @Override
     public String toString() {
-        return "model.Pet[ id=" + petID + " ]";
-    }
-
-    public Long getPetID() {
-        return petID;
-    }
-
-    public void setPetID(Long petID) {
-        this.petID = petID;
+        return "model.WorkingRota[ id=" + id + " ]";
     }
 
 }
