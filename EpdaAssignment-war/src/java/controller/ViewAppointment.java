@@ -5,12 +5,16 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 import javax.ejb.EJB;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import model.AnimalTypeFacade;
+import model.Appointment;
+import model.AppointmentFacade;
+import model.MedicalReportFacade;
+import model.PetFacade;
 import model.Users;
 import model.UsersFacade;
 
@@ -18,8 +22,20 @@ import model.UsersFacade;
  *
  * @author USER
  */
-@WebServlet(name = "ManageStaff", urlPatterns = {"/ManageStaff"})
-public class ManageStaff extends HttpServlet {
+@WebServlet(name = "ViewAppointment", urlPatterns = {"/ViewAppointment"})
+public class ViewAppointment extends HttpServlet {
+
+    @EJB
+    private MedicalReportFacade medicalReportFacade;
+
+    @EJB
+    private AnimalTypeFacade animalTypeFacade;
+
+    @EJB
+    private AppointmentFacade appointmentFacade;
+
+    @EJB
+    private PetFacade petFacade;
 
     @EJB
     private UsersFacade usersFacade;
@@ -33,14 +49,20 @@ public class ManageStaff extends HttpServlet {
     }
 
     protected void retrievedStaffData(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<Users> staff = usersFacade.findAllLegitUsers();
-        System.out.println(staff.get(0).getId() + " " + staff.get(0).getEmail());
+
+        Users currentUser = (Users) request.getSession().getAttribute("user");
+        List<Appointment> appointments = appointmentFacade.getPersonalAppointmentList(currentUser.getId());
+
+        // Only sort if have var
+        if (appointments.size() > 1) {
+            appointments = appointmentFacade.sortByLatestTimeslot(appointments);
+        }
 
         // Set response content type to JSON
         response.setContentType("application/json");
 
         // Write JSON to response
-        response.getWriter().write(new Gson().toJson(staff));
+        response.getWriter().write(new Gson().toJson(appointments));
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

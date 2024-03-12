@@ -14,22 +14,23 @@
         <title>Registration</title>
     </head>
     <body>
-        <a href="${applicationScope.isAddStaff != null ?'ManageStaff' : 'login.jsp'}">< Back</a>
+        <a href="${applicationScope.isAddStaff != null ?'manageStaff.jsp' : 'login.jsp'}">< Back</a>
         <br><br><br>
+        <h1>Registration</h1>
         <form action="Register" method="POST">
             <input type="text" hidden name="isAddStaff" value="${applicationScope.isAddStaff}">
             <table>
                 <tr>
                     <td>Username:</td>
-                    <td><input type="text" name="username" size="20"></td>
+                    <td><input type="text" name="username" size="20" required></td>
                 </tr>
                 <tr>
                     <td>Password:</td>
-                    <td><input type="password" name="password" size="20"></td>
+                    <td><input type="password" name="password" size="20" required></td>
                 </tr>
                 <tr>
                     <td>Confirm Password:</td>
-                    <td><input type="password" name="confirmPass" size="20"></td>
+                    <td><input type="password" name="confirmPass" size="20" required></td>
                 </tr>
                 <tr>
                     <td>Role:</td>

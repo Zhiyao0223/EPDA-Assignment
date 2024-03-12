@@ -5,6 +5,8 @@
  */
 package model;
 
+import java.util.Iterator;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -28,9 +30,33 @@ public class UsersFacade extends AbstractFacade<Users> {
         super(Users.class);
     }
 
-    public Boolean checkCredential(String name, String password) {
-        // TODO
-        return true;
+    // This function return all users except deleted
+    public List<Users> findAllLegitUsers() {
+        List<Users> allUsers = findAll();
+
+        // Remove deleted user
+        Iterator<Users> iterator = allUsers.iterator();
+        while (iterator.hasNext()) {
+            Users user = iterator.next();
+            if (user.getStatus() == 3) {
+                iterator.remove();
+            }
+        }
+        return allUsers;
     }
 
+    // Retrieve customer only
+    public List<Users> findCustomer() {
+        List<Users> customers = findAll();
+
+        // Remove deleted user
+        Iterator<Users> iterator = customers.iterator();
+        while (iterator.hasNext()) {
+            Users user = iterator.next();
+            if (!"customer".equals(user.getRole().getDescription())) {
+                iterator.remove();
+            }
+        }
+        return customers;
+    }
 }

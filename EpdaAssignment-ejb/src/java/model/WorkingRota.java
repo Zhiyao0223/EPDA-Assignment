@@ -29,19 +29,19 @@ public class WorkingRota implements Serializable {
 
     @OneToOne
     @JoinColumn(name = "staff_id", referencedColumnName = "id")
-    Users staffId;
+    private Users staffId;
 
-    @Column(name = "working_time")
-    Timestamp workingTime;
+    @Column(name = "timeslot")
+    private Timestamp timeslot;
 
     @Column(name = "status")
-    int status; // 0 - Active, 1 - Cancelled
+    private int status; // 0 - Available, 1 - Booked
 
     @Column(name = "created_date")
-    Timestamp createdDate;
+    private Timestamp createdDate;
 
     @Column(name = "updated_date")
-    Timestamp updatedDate;
+    private Timestamp updatedDate;
 
     public Long getId() {
         return id;
@@ -49,6 +49,46 @@ public class WorkingRota implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Users getStaffId() {
+        return staffId;
+    }
+
+    public void setStaffId(Users staffId) {
+        this.staffId = staffId;
+    }
+
+    public Timestamp getTimeslot() {
+        return timeslot;
+    }
+
+    public void setTimeslot(Timestamp timeslot) {
+        this.timeslot = timeslot;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public Timestamp getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Timestamp createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public Timestamp getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(Timestamp updatedDate) {
+        this.updatedDate = updatedDate;
     }
 
     @Override

@@ -3,44 +3,59 @@ package controller;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 import javax.ejb.EJB;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import model.Users;
 import model.UsersFacade;
+import service.TableName;
 
 /**
  *
  * @author USER
  */
-@WebServlet(name = "ManageStaff", urlPatterns = {"/ManageStaff"})
-public class ManageStaff extends HttpServlet {
+@WebServlet(name = "DeleteStaff", urlPatterns = {"/DeleteStaff"})
+public class DeleteStaff extends HttpServlet {
 
     @EJB
     private UsersFacade usersFacade;
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-
-        }
-    }
-
-    protected void retrievedStaffData(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<Users> staff = usersFacade.findAllLegitUsers();
-        System.out.println(staff.get(0).getId() + " " + staff.get(0).getEmail());
-
         // Set response content type to JSON
         response.setContentType("application/json");
 
-        // Write JSON to response
-        response.getWriter().write(new Gson().toJson(staff));
+        // Initialize var
+        String[] err = {"0"};
+
+        // Get POST params
+        String staffId = request.getParameter("id");
+
+        // Get current logined user and deleted user
+        Users currentUser = usersFacade.find(((Users) request.getSession().getAttribute("user")).getId());
+        Users deletedUser = usersFacade.find(Long.parseLong(staffId));
+
+        try {
+            if (currentUser.getId().equals(Long.parseLong(staffId))) {
+                throw new Exception("-1");
+            } // Check if delete self
+            else if (currentUser.getRole().getId().equals(deletedUser.getRole().getId())) {
+                throw new Exception("-2");
+            } // Check if delete someone that has same role
+
+            // Change status to delete in db
+            usersFacade.updateByAttribute(TableName.Users.name(), deletedUser.getId(), "status", 3);
+            usersFacade.refreshUpdatedDate(TableName.Users.name(), deletedUser.getId());
+        } catch (Exception e) {
+            // Write JSON to response
+            err[1] = e.getMessage();
+        }
+
+        response.getWriter().write(new Gson().toJson(err));
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -55,7 +70,7 @@ public class ManageStaff extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        retrievedStaffData(request, response);
+        processRequest(request, response);
     }
 
     /**

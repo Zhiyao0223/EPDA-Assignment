@@ -3,6 +3,7 @@ package controller;
 import static controller.EditProfile.getErrorMessage;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Timestamp;
 import javax.ejb.EJB;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -52,28 +53,45 @@ public class EditStaff extends HttpServlet {
                     {"email", ""},
                     {"dateOfBirth", ""},
                     {"gender", ""},
-                    {"phoneNo", ""}
+                    {"phoneNo", ""},
+                    {"status", ""}
                 };
 
                 // Compare changes
                 if (!request.getParameter("email").trim().equalsIgnoreCase(editUser.getEmail()) && !Validation.isEmpty(request.getParameter("email"))) {
                     appendedData[0][1] = request.getParameter("email");
+
+                    editUser.setEmail(appendedData[0][1]);
                     System.out.println("email: " + appendedData[0][1]);
                     hasChange = true;
                 }
                 if (!request.getParameter("dob").equals(editUser.getDateOfBirth()) && !Validation.isEmpty(request.getParameter("dob"))) {
                     appendedData[1][1] = request.getParameter("dob");
+
+                    editUser.setDateOfBirth(appendedData[1][1]);
                     System.out.println("DOB: " + appendedData[1][1]);
                     hasChange = true;
                 }
-                if (!request.getParameter("gender").equals(editUser.getGender()) && !Validation.isEmpty(request.getParameter("gender"))) {
+                if (!request.getParameter("gender").equals(editUser.getGender())) {
                     appendedData[2][1] = request.getParameter("gender");
+
+                    editUser.setGender(appendedData[2][1]);
                     System.out.println("gender: " + appendedData[2][1]);
                     hasChange = true;
                 }
                 if (!request.getParameter("phone").trim().equals(editUser.getPhoneNo()) && !Validation.isEmpty(request.getParameter("phone"))) {
                     appendedData[3][1] = request.getParameter("phone");
+
+                    editUser.setPhoneNo(appendedData[3][1]);
                     System.out.println("phone: " + currentUser.getPhoneNo() + "," + appendedData[3][1]);
+                    hasChange = true;
+                }
+                System.out.println("Status:" + request.getParameter("status"));
+                if (!request.getParameter("status").trim().equals(String.valueOf(editUser.getStatus()))) {
+                    appendedData[4][1] = request.getParameter("status");
+
+                    editUser.setPhoneNo(appendedData[4][1]);
+                    System.out.println("Status: " + editUser.getStatus() + "," + appendedData[4][1]);
                     hasChange = true;
                 }
 
@@ -92,17 +110,18 @@ public class EditStaff extends HttpServlet {
                     System.out.println("Changes: " + changes[0] + " " + changes[1]);
 
                     // Update db
-                    // If datetime need convert before update
                     if (changes[0].equals("dateOfBirth")) {
                         usersFacade.updateByAttribute(TableName.Users.name(), editUser.getId(), changes[0], Util.dateStringToTimestamp(changes[1]));
+                    } else if (changes[0].equals("status")) {
+                        usersFacade.updateByAttribute(TableName.Users.name(), editUser.getId(), changes[0], Integer.parseInt(changes[1]));
                     } else {
                         usersFacade.updateByAttribute(TableName.Users.name(), editUser.getId(), changes[0], changes[1]);
                     }
-
-                    request.getRequestDispatcher("editStaff.jsp").include(request, response);
-                    out.println("Record modified succesfully.");
                 }
 
+                // Update updated time for row also
+                usersFacade.refreshUpdatedDate(TableName.Users.name(), editUser.getId());
+                response.sendRedirect("manageStaff.jsp?editSuccess=true");
             } catch (Exception e) {
                 request.getRequestDispatcher("editStaff.jsp").include(request, response);
                 out.println(getErrorMessage(e.getMessage()));

@@ -48,6 +48,15 @@ public class AbstractUser {
         initializeDefaultClassValue();
     }
 
+    // Used in add customer (Receiptionist)
+    public AbstractUser(String tmpName, String tmpGender) {
+        this.name = tmpName;
+        this.gender = tmpGender;
+        this.createdDate = new Timestamp(System.currentTimeMillis());
+        this.updatedDate = new Timestamp(System.currentTimeMillis());
+        this.status = 0;
+    }
+
     public AbstractUser(String name, String gender, Timestamp createdDate, Timestamp updatedDate, int status) {
         this.name = name;
         this.gender = gender;
@@ -81,7 +90,7 @@ public class AbstractUser {
     }
 
     public String getGender() {
-        return (gender == null || gender.trim().isEmpty()) ? "-" : gender;
+        return (gender == null || gender.trim().isEmpty()) ? "" : gender;
     }
 
     public Timestamp getCreatedDate() {
@@ -101,5 +110,9 @@ public class AbstractUser {
         this.createdDate = new Timestamp(System.currentTimeMillis());
         this.updatedDate = new Timestamp(System.currentTimeMillis());
         this.gender = null;
+    }
+
+    public void onUpdate() {
+        setUpdatedDate(new Timestamp(System.currentTimeMillis()));
     }
 }

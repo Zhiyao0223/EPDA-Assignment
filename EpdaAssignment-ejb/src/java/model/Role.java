@@ -42,6 +42,11 @@ public class Role implements Serializable {
     public Role() {
     }
 
+    // Used in add customer (Receiptionist)
+    public Role(Long tmpId) {
+        this.id = tmpId;
+    }
+
     public String getDescription() {
         return description;
     }

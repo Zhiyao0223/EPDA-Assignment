@@ -1,46 +1,35 @@
 package controller;
 
-import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
-import javax.ejb.EJB;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import model.Users;
-import model.UsersFacade;
 
 /**
  *
  * @author USER
  */
-@WebServlet(name = "ManageStaff", urlPatterns = {"/ManageStaff"})
-public class ManageStaff extends HttpServlet {
-
-    @EJB
-    private UsersFacade usersFacade;
+@WebServlet(name = "ViewMedicalReport", urlPatterns = {"/ViewMedicalReport"})
+public class ViewMedicalReport extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-
+            /* TODO output your page here. You may use following sample code. */
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet ViewMedicalReport</title>");
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Servlet ViewMedicalReport at " + request.getContextPath() + "</h1>");
+            out.println("</body>");
+            out.println("</html>");
         }
-    }
-
-    protected void retrievedStaffData(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<Users> staff = usersFacade.findAllLegitUsers();
-        System.out.println(staff.get(0).getId() + " " + staff.get(0).getEmail());
-
-        // Set response content type to JSON
-        response.setContentType("application/json");
-
-        // Write JSON to response
-        response.getWriter().write(new Gson().toJson(staff));
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -55,7 +44,7 @@ public class ManageStaff extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        retrievedStaffData(request, response);
+        processRequest(request, response);
     }
 
     /**

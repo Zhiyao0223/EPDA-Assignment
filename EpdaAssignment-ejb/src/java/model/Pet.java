@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package model;
 
 import java.io.Serializable;
@@ -37,6 +32,13 @@ public class Pet
     private Users custID;
 
     public Pet() {
+    }
+
+    // Used during add pet (Receiptionist)
+    public Pet(String tmpName, String tmpGender, Users tmpOwner, AnimalType tmpAnimalType) {
+        super(tmpName, tmpGender);
+        this.custID = tmpOwner;
+        this.type = tmpAnimalType;
     }
 
     public AnimalType getType() {

@@ -2,6 +2,7 @@ package controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Iterator;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.servlet.ServletContext;
@@ -33,6 +34,16 @@ public class Register extends HttpServlet {
     protected void retrieveRoleData(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // Retrieve all roles from the facade
         List<Role> roles = roleFacade.findAll();
+
+        // Remove customer from registration
+        Iterator<Role> iterator = roles.iterator();
+        while (iterator.hasNext()) {
+            Role user = iterator.next();
+            if (user.getDescription().equals("customer")) {
+                iterator.remove();
+                break;
+            }
+        }
 
         // Capitalize all first case
         for (Role role : roles) {

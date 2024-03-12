@@ -33,7 +33,7 @@
         <title>Edit Staff Profile</title>
     </head>
     <body>
-        <a href='ManageStaff'>< Back</a>
+        <a href='manageStaff.jsp'>< Back</a>
         <h1>Edit Staff Profile</h1>
         <form action="editStaff" method="post">
             <label for="name">Name:</label>

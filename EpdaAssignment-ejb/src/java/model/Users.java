@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
 /**
@@ -69,6 +70,16 @@ public class Users extends AbstractUser implements Serializable {
         }
     }
 
+    // Used during add customer (Receiptionist)
+    public Users(String tmpName, String tmpEmail, Timestamp tmpDob, String tmpGender, String tmpPhoneNo) {
+        super(tmpName, tmpGender);
+        this.email = tmpEmail;
+        this.phoneNo = tmpPhoneNo;
+        this.dateOfBirth = tmpDob;
+        this.role = new Role(Long.parseLong("4"));
+        this.password = "";
+    }
+
     public Role getRole() {
         return role;
     }
@@ -82,7 +93,7 @@ public class Users extends AbstractUser implements Serializable {
     }
 
     public String getEmail() {
-        return email;
+        return email != null ? email : "";
     }
 
     public void setEmail(String email) {
@@ -111,7 +122,7 @@ public class Users extends AbstractUser implements Serializable {
     }
 
     public String getPhoneNo() {
-        return phoneNo;
+        return phoneNo != null ? phoneNo : "";
     }
 
     public String getPassword() {

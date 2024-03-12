@@ -14,17 +14,23 @@
     <script async>
         (async () => {
             await alert(" Customer account cannot used to login.");
-            window.location.href = "login.jsp";
+            window.location.href = "Logout";
         })();
     </script>
 </c:if>
 
-<!--Check if set parameter-->
-<% if (request.getParameter("updateSuccess") != null) { %>
+
 <script>
-    alert("Update Success");
+    // Check if set parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('updateSuccess')) {
+        alert('Update Success');
+    } else if (urlParams.has("addCustomerSuccess")) {
+        alert("New customer is added");
+    } else if (urlParams.has("addPetSuccess")) {
+        alert("New pet is added");
+    }
 </script>
-<% }%>
 
 <!DOCTYPE html>
 <html>
@@ -54,7 +60,7 @@
             <p>What would you like to do today?</p>
             <ul>
                 <li><a href="editProfile.jsp">Edit Personal Profile</a></li>
-                <li><a href="manageAppointment.jsp">Manage Appointments</a></li>
+                <li><a href="manageSelfAppointment.jsp">Manage Appointments</a></li>
                 <li><a href="addCustomerPet.jsp">Add Customer and Pet Profile</a></li>
                 <li><a href="assignVet.jsp">Assign Vet to Appointment</a></li>
                 <li><a href="Logout">Logout</a></li>
@@ -66,7 +72,7 @@
             <p>What would you like to do today?</p>
             <ul>
                 <li><a href="editProfile.jsp">Edit Personal Profile</a></li>
-                <li><a href="ManageStaff">Manage Staffs</a></li>
+                <li><a href="manageStaff.jsp">Manage Staffs</a></li>
                 <li><a href="createSchedule.jsp">Create Working Rota</a></li>
                 <li><a href="report.jsp">Generate Report</a></li>
                 <li><a href="Logout">Logout</a></li>

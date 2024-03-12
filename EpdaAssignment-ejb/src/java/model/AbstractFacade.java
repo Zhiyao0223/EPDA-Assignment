@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -44,6 +45,15 @@ public abstract class AbstractFacade<T> {
         String jpql = "UPDATE " + tableName + " SET " + attribute + " = :value WHERE ID = :primaryKey";
         getEntityManager().createQuery(jpql)
                 .setParameter("value", value)
+                .setParameter("primaryKey", primaryKey)
+                .executeUpdate();
+    }
+
+    // Update updated_date
+    public void refreshUpdatedDate(String tableName, Object primaryKey) {
+        String jpql = "UPDATE " + tableName + " SET " + "updatedDate" + " = :value WHERE ID = :primaryKey";
+        getEntityManager().createQuery(jpql)
+                .setParameter("value", new Timestamp(System.currentTimeMillis()))
                 .setParameter("primaryKey", primaryKey)
                 .executeUpdate();
     }

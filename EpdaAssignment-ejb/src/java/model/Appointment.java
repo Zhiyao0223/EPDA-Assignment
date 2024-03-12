@@ -1,13 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package model;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -39,9 +38,8 @@ public class Appointment implements Serializable {
     @JoinColumn(name = "pet_id", referencedColumnName = "id")
     private Pet petID;
 
-    @Column(name = "appointment_date")
-    private Timestamp appointmentDate;
-
+//    @Column(name = "appointment_date")
+//    private Timestamp appointmentDate;
     @Column(name = "status")
     private int status = 0; // 0 - Complete, 1 - Pending Vet, 2 - Scheduled, 3 - Cancelled
 
@@ -52,6 +50,28 @@ public class Appointment implements Serializable {
     private Timestamp updatedDate;
 
     public Appointment() {
+    }
+
+    // Used in manage appointment (Vet)
+    public Appointment(Long tmpId, String petName, String ownerName, Timestamp timeslot, int appointmentStatus, Timestamp createdDate, Timestamp updatedDate) {
+        // Initialize tmp class to store var
+        Pet pet = new Pet();
+        Users customer = new Users();
+        WorkingRota schedule = new WorkingRota();
+        this.id = tmpId;
+        this.petID = pet;
+        this.status = appointmentStatus;
+        this.createdDate = createdDate;
+        this.updatedDate = updatedDate;
+        this.schedule = schedule;
+        this.schedule.setTimeslot(timeslot);
+
+        // Set customer class
+        customer.setName(ownerName);
+
+        // Set pet class
+        this.petID.setName(petName);
+        this.petID.setCustID(customer);
     }
 
     public void setAppointmentID(Long appointmentID) {
@@ -70,12 +90,16 @@ public class Appointment implements Serializable {
         return schedule;
     }
 
-    public void setSchedule(WorkingRota schedule) {
-        this.schedule = schedule;
+    public Long getId() {
+        return id;
     }
 
-    public void setAppointmentDate(Timestamp appointmentDate) {
-        this.appointmentDate = appointmentDate;
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setSchedule(WorkingRota schedule) {
+        this.schedule = schedule;
     }
 
     public void setCreatedDate(Timestamp createdDate) {
@@ -98,10 +122,6 @@ public class Appointment implements Serializable {
         return petID;
     }
 
-    public Timestamp getAppointmentDate() {
-        return appointmentDate;
-    }
-
     public Timestamp getCreatedDate() {
         return createdDate;
     }
@@ -110,9 +130,8 @@ public class Appointment implements Serializable {
         return updatedDate;
     }
 
-    public Appointment(Pet petID, Timestamp appointmentDate, Timestamp createdDate, Timestamp updatedDate) {
+    public Appointment(Pet petID, Timestamp createdDate, Timestamp updatedDate) {
         this.petID = petID;
-        this.appointmentDate = appointmentDate;
         this.createdDate = createdDate;
         this.updatedDate = updatedDate;
     }
