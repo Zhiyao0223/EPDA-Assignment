@@ -59,4 +59,19 @@ public class UsersFacade extends AbstractFacade<Users> {
         }
         return customers;
     }
+
+    // Retrieve vet only
+    public List<Users> findVet() {
+        List<Users> vets = findAll();
+
+        // Remove deleted user
+        Iterator<Users> iterator = vets.iterator();
+        while (iterator.hasNext()) {
+            Users user = iterator.next();
+            if (!"vet".equals(user.getRole().getDescription())) {
+                iterator.remove();
+            }
+        }
+        return vets;
+    }
 }

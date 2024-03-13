@@ -52,10 +52,10 @@
                                 appointment.status == 2 ? "Scheduled" : "Cancelled";
 
                         // Create a edit and delete button
-                        var editButton = (appointment.status != 3)
+                        var editButton = (appointment.status != 3 && appointment.status != 0)
                                 ? "<button type='submit'><i class='fa fa-edit' style='font-size:20px;'></i></button>"
                                 : "-";
-                        var cancelButton = (appointment.status != 3)
+                        var cancelButton = (appointment.status != 3 && appointment.status != 0)
                                 ? "<button onclick='confirmDelete(" + appointment.id + ")'><i class='fa fa-times' style='font-size:20px;'></i></button>"
                                 : "-";
 
@@ -70,7 +70,7 @@
                                 "<td>" + status + "</td>" +
                                 "<td>" + appointment.createdDate + "</td>" +
                                 "<td>" + appointment.updatedDate + "</td>" +
-                                "<td><form action='editAppointment' method='GET'><input type='hidden' name='userId' value='" + appointment.id + "'/>" + editButton + "</form></td>" +
+                                "<td><form action='editAppointment.jsp' method='GET'><input type='hidden' name='editId' value='" + appointment.id + "'/>" + editButton + "</form></td>" +
                                 "<td>" + cancelButton + "</td>" +
                                 "</tr>";
 

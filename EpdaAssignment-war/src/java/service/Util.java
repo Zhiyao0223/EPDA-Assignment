@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 import java.util.logging.Level;
@@ -87,7 +88,15 @@ public class Util {
             e.printStackTrace();
             return null;
         }
-
     }
 
+    // Calculate coming date based on input day
+    public static Timestamp addDaysToDate(Timestamp oldDate, int numberOfDay) {
+        // Create a Calendar instance and add specificday
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(oldDate.getTime());
+        calendar.add(Calendar.DAY_OF_MONTH, numberOfDay);
+
+        return new Timestamp(calendar.getTimeInMillis());
+    }
 }

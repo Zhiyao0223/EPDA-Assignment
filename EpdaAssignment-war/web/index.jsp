@@ -72,7 +72,7 @@
             <ul>
                 <li><a href="editProfile.jsp">Edit Personal Profile</a></li>
                 <li><a href="manageStaff.jsp">Manage Staffs</a></li>
-                <li><a href="createSchedule.jsp">Create Working Rota</a></li>
+                <li><a href="createWorkingRota.jsp">Create Working Rota</a></li>
                 <li><a href="report.jsp">Generate Report</a></li>
                 <li><a href="Logout">Logout</a></li>
             </ul>

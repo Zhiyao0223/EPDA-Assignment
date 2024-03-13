@@ -105,7 +105,7 @@ public class AddAppointment extends HttpServlet {
 
     protected void retrieveFormRequireData(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Pet> petList = petFacade.findAll();
-        List<WorkingRota> workingRotaList = workingRotaFacade.getAvaiableSlot();
+        List<WorkingRota> workingRotaList = workingRotaFacade.getAvailableSlot();
         List<Expertise> expertiseList = expertiseFacade.findAll();
 
         // Used to store both list and return to JSP
