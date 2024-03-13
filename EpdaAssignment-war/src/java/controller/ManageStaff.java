@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import model.Users;
 import model.UsersFacade;
+import service.TableName;
 
 /**
  *
@@ -24,17 +25,42 @@ public class ManageStaff extends HttpServlet {
     @EJB
     private UsersFacade usersFacade;
 
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+    protected void deleteStaff(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
+        // Set response content type to JSON
+        response.setContentType("application/json");
 
+        // Initialize var
+        String[] err = {"0"};
+
+        // Get POST params
+        String staffId = request.getParameter("id");
+
+        // Get current logined user and deleted user
+        Users currentUser = usersFacade.find(((Users) request.getSession().getAttribute("user")).getId());
+        Users deletedUser = usersFacade.find(Long.parseLong(staffId));
+
+        try {
+            if (currentUser.getId().equals(Long.parseLong(staffId))) {
+                throw new Exception("-1");
+            } // Check if delete self
+            else if (currentUser.getRole().getId().equals(deletedUser.getRole().getId())) {
+                throw new Exception("-2");
+            } // Check if delete someone that has same role
+
+            // Change status to delete in db
+            usersFacade.updateByAttribute(TableName.Users.name(), deletedUser.getId(), "status", 3);
+            usersFacade.refreshUpdatedDate(TableName.Users.name(), deletedUser.getId());
+        } catch (Exception e) {
+            // Write JSON to response
+            err[1] = e.getMessage();
         }
+
+        response.getWriter().write(new Gson().toJson(err));
     }
 
     protected void retrievedStaffData(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Users> staff = usersFacade.findAllLegitUsers();
-        System.out.println(staff.get(0).getId() + " " + staff.get(0).getEmail());
 
         // Set response content type to JSON
         response.setContentType("application/json");
@@ -69,7 +95,7 @@ public class ManageStaff extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        deleteStaff(request, response);
     }
 
     /**

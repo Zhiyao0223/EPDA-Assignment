@@ -62,4 +62,9 @@ public class Validation {
     public static boolean isDigitOnly(String str) {
         return str.matches("\\d+");
     }
+
+    // Validate if a string exceed specific character
+    public static boolean isExceedMaxCharacter(String str, int maxCharLimit) {
+        return str.length() > maxCharLimit;
+    }
 }

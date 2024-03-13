@@ -48,7 +48,7 @@
             <p>What would you like to do today?</p>
             <ul>
                 <li><a href="editProfile.jsp">Edit Personal Profile</a></li>
-                <li><a href="diagnosis">View Diagnosis and Prognosis</a></li>
+                <li><a href="viewMedicalReport.jsp">View Diagnosis and Prognosis</a></li>
                 <li><a href="viewAppointment.jsp">View My Appointments</a></li>
                 <li><a href="Logout">Logout</a></li>
             </ul>
@@ -60,9 +60,8 @@
             <p>What would you like to do today?</p>
             <ul>
                 <li><a href="editProfile.jsp">Edit Personal Profile</a></li>
-                <li><a href="manageSelfAppointment.jsp">Manage Appointments</a></li>
+                <li><a href="manageAppointment.jsp">Manage Appointments</a></li>
                 <li><a href="addCustomerPet.jsp">Add Customer and Pet Profile</a></li>
-                <li><a href="assignVet.jsp">Assign Vet to Appointment</a></li>
                 <li><a href="Logout">Logout</a></li>
             </ul>
         </c:if>

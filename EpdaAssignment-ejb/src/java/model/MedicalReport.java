@@ -35,14 +35,14 @@ public class MedicalReport implements Serializable {
     @Column(name = "total_fee")
     private double totalFee;
 
-    @Column(name = "description")
-    private String description;
+    @Column(name = "diagnosis_detail")
+    private String diagnosisDetail;
 
-    @Column(name = "type")
-    private int type; // 0 - Diagnosis, 1 - Prognosis
+    @Column(name = "prognosis_detail")
+    private String prognosisDetail;
 
     @Column(name = "status")
-    private int status;
+    private int status; // 0 - Complete, 1 - Pending prognosis
 
     @Column(name = "created_date")
     private Timestamp createdDate;
@@ -53,8 +53,64 @@ public class MedicalReport implements Serializable {
     public MedicalReport() {
     }
 
+    // Used in view medical report page
+    public MedicalReport(Long tmpId, String diagnosisDetail, String prognosisDetail, double totalFee, int reportStatus, Timestamp createdDate, Timestamp updatedDate, String petName, String custName, String animalType, Timestamp tmpTimeslot) {
+        this.id = tmpId;
+        this.diagnosisDetail = diagnosisDetail;
+        this.prognosisDetail = prognosisDetail;
+        this.totalFee = totalFee;
+        this.status = reportStatus;
+        this.createdDate = createdDate;
+        this.updatedDate = updatedDate;
+        this.appointment = new Appointment();
+
+        // Set value for working rota
+        WorkingRota tmpWorkingRota = new WorkingRota();
+        tmpWorkingRota.setTimeslot(tmpTimeslot);
+        this.appointment.setSchedule(tmpWorkingRota);
+
+        // Set value for users class
+        Users tmpUser = new Users();
+        tmpUser.setName(custName);
+
+        // Set value for animalType class
+        AnimalType tmpType = new AnimalType();
+        tmpType.setDescription(animalType);
+
+        // Set value for pet class
+        Pet tmpPet = new Pet();
+        tmpPet.setType(tmpType);
+        tmpPet.setCustID(tmpUser);
+        tmpPet.setName(petName);
+        this.appointment.setPetID(tmpPet);
+    }
+
     public int getStatus() {
         return status;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getDiagnosisDetail() {
+        return diagnosisDetail;
+    }
+
+    public void setDiagnosisDetail(String diagnosisDetail) {
+        this.diagnosisDetail = diagnosisDetail;
+    }
+
+    public String getPrognosisDetail() {
+        return prognosisDetail;
+    }
+
+    public void setPrognosisDetail(String prognosisDetail) {
+        this.prognosisDetail = prognosisDetail;
     }
 
     public void setStatus(int status) {
@@ -89,14 +145,6 @@ public class MedicalReport implements Serializable {
         return totalFee;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public int getType() {
-        return type;
-    }
-
     public void setReportID(Long reportID) {
         this.id = reportID;
     }
@@ -107,14 +155,6 @@ public class MedicalReport implements Serializable {
 
     public void setTotalFee(double totalFee) {
         this.totalFee = totalFee;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setType(int type) {
-        this.type = type;
     }
 
     @Override

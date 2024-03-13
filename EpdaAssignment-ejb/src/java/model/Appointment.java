@@ -38,8 +38,6 @@ public class Appointment implements Serializable {
     @JoinColumn(name = "pet_id", referencedColumnName = "id")
     private Pet petID;
 
-//    @Column(name = "appointment_date")
-//    private Timestamp appointmentDate;
     @Column(name = "status")
     private int status = 0; // 0 - Complete, 1 - Pending Vet, 2 - Scheduled, 3 - Cancelled
 

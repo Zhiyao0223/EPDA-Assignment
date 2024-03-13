@@ -2,10 +2,13 @@ package service;
 
 import static com.oracle.jrockit.jfr.ContentType.Timestamp;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -59,6 +62,21 @@ public class Util {
     // Convert timestamp to date string
     public static String timestampToDateString(Timestamp t) {
         return (t == null) ? null : new SimpleDateFormat("yyyy-MM-dd").format(t.getTime());
+    }
+
+    // Conver timestamp to date string with time
+    public static String timestampToDateTimeString(Timestamp t) {
+        return (t == null) ? null : new SimpleDateFormat("h:mma dd MMM yyyy").format(t.getTime());
+    }
+
+    // Convert date string with time to timetamp
+    public static Timestamp dateTimeStringToTimestamp(String t) {
+        try {
+            return new Timestamp((new SimpleDateFormat("h:mma dd MMM yyyy").parse(t)).getTime());
+        } catch (ParseException ex) {
+            Logger.getLogger(Util.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
     // Covert date string to timestamp

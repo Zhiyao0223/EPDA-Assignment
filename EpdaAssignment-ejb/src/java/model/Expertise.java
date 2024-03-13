@@ -32,20 +32,20 @@ public class Expertise implements Serializable {
     // Variables
     @ManyToOne
     @JoinColumn(name = "vet_id", referencedColumnName = "id")
-    Users vetID;
+    private Users vetID;
 
     @OneToOne
     @JoinColumn(name = "animal_type", referencedColumnName = "id")
-    AnimalType animalType;
+    private AnimalType animalType;
 
     @Column(name = "created_date")
-    Timestamp createdDate;
+    private Timestamp createdDate;
 
     @Column(name = "updated_date")
-    Timestamp updatedDate;
+    private Timestamp updatedDate;
 
     @Column(name = "status")
-    int status; // 0 - Enable, 1 - Disable
+    private int status; // 0 - Enable, 1 - Disable
 
     // Constructor
     public Expertise() {
@@ -59,6 +59,54 @@ public class Expertise implements Serializable {
 
     public void setId(Long id) {
         this.expertiseID = id;
+    }
+
+    public Long getExpertiseID() {
+        return expertiseID;
+    }
+
+    public void setExpertiseID(Long expertiseID) {
+        this.expertiseID = expertiseID;
+    }
+
+    public Users getVetID() {
+        return vetID;
+    }
+
+    public void setVetID(Users vetID) {
+        this.vetID = vetID;
+    }
+
+    public AnimalType getAnimalType() {
+        return animalType;
+    }
+
+    public void setAnimalType(AnimalType animalType) {
+        this.animalType = animalType;
+    }
+
+    public Timestamp getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Timestamp createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public Timestamp getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(Timestamp updatedDate) {
+        this.updatedDate = updatedDate;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     @Override

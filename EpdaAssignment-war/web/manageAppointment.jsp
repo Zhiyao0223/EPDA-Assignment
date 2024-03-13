@@ -17,59 +17,71 @@
     // Check if the specific params exists in the URL
     if (urlParams.has('editSuccess')) {
         alert('Record modified successfully');
+    } else if (urlParams.has('addAppointmentSuccess')) {
+        alert('Appointment add successfully');
     }
 
     // Function to refetch database and filter by search
     function refreshContent() {
         var searchQuery = $('#searchInput').val().trim().toLowerCase();
         $.ajax({
-            url: "ManageStaff",
+            url: "ManageAppointment",
             method: "GET",
             success: function (response) {
+                console.log(response);
+
                 // Clear existing table rows
-                $("#staffTableBody").empty();
+                $("#appointmentTableBody").empty();
 
                 // Flag to track if any rows were added
                 var rowsAdded = false;
 
                 // Iterate over JSON data and populate table
-                $.each(response, function (index, staff) {
-                    // Filter based on name
-                    if (staff.name.toLowerCase().includes(searchQuery)) {
+                $.each(response, function (index, appointment) {
+                    // Filter based on customer and pet name
+                    if (appointment.petID.name.toLowerCase().includes(searchQuery) ||
+                            appointment.petID.custID.name.toLowerCase().includes(searchQuery)) {
                         // Check for undefined values and replace them with "-"
-                        var email = staff.email !== undefined ? staff.email : "-";
-                        var gender = staff.gender !== undefined ? staff.gender : "-";
-                        var phoneNo = staff.phoneNo !== undefined ? staff.phoneNo : "-";
-                        var dateOfBirth = staff.dateOfBirth !== undefined ? staff.dateOfBirth : "-";
-                        var status = staff.status == 0 ? "Active" :
-                                staff.status == 1 ? "Pending Approval" :
-                                staff.status == 2 ? "Suspended" : "Deleted";
-                        // Create a delete button for each row with a confirmation dialog
-                        var editButton = "<button type='submit'><i class='fa fa-edit' style='font-size:20px;'></i></button>";
-                        var deleteButton = "<button onclick='confirmDelete(" + staff.id + ")'><i class='fa fa-trash' style='font-size:20px;'></i></button>";
+                        var ownerName = appointment.petID.custID.name !== undefined ? appointment.petID.custID.name : "-";
+                        var petName = appointment.petID.name !== undefined ? appointment.petID.name : "-";
+                        var petType = appointment.petID.type.description !== undefined ? appointment.petID.type.description : "-";
+                        var timeslot = appointment.schedule.timeslot !== undefined ? appointment.schedule.timeslot : "-";
+                        var staffName = appointment.schedule.staffId.name !== undefined ? appointment.schedule.staffId.name : "-";
+                        var status = appointment.status == 0 ? "Complete" :
+                                appointment.status == 1 ? "Pending vet" :
+                                appointment.status == 2 ? "Scheduled" : "Cancelled";
+
+                        // Create a edit and delete button
+                        var editButton = (appointment.status != 3)
+                                ? "<button type='submit'><i class='fa fa-edit' style='font-size:20px;'></i></button>"
+                                : "-";
+                        var cancelButton = (appointment.status != 3)
+                                ? "<button onclick='confirmDelete(" + appointment.id + ")'><i class='fa fa-times' style='font-size:20px;'></i></button>"
+                                : "-";
+
                         // Create a table row and append it to the table body
                         var row = "<tr>" +
-                                "<td>" + staff.id + "</td>" +
-                                "<td>" + staff.name + "</td>" +
-                                "<td>" + email + "</td>" +
-                                "<td>" + gender + "</td>" +
-                                "<td>" + phoneNo + "</td>" +
-                                "<td>" + dateOfBirth + "</td>" +
-                                "<td>" + staff.role.description + "</td>" +
+                                "<td>" + appointment.id + "</td>" +
+                                "<td>" + ownerName + "</td>" +
+                                "<td>" + petName + "</td>" +
+                                "<td>" + petType + "</td>" +
+                                "<td>" + timeslot + "</td>" +
+                                "<td>" + staffName + "</td>" +
                                 "<td>" + status + "</td>" +
-                                "<td>" + staff.createdDate + "</td>" +
-                                "<td>" + staff.updatedDate + "</td>" +
-                                "<td><form action='editStaff' method='GET'><input type='hidden' name='userId' value='" + staff.id + "'/>" + editButton + "</form></td>" +
-                                "<td>" + deleteButton + "</td>" +
+                                "<td>" + appointment.createdDate + "</td>" +
+                                "<td>" + appointment.updatedDate + "</td>" +
+                                "<td><form action='editAppointment' method='GET'><input type='hidden' name='userId' value='" + appointment.id + "'/>" + editButton + "</form></td>" +
+                                "<td>" + cancelButton + "</td>" +
                                 "</tr>";
 
-                        $("#staffTableBody").append(row);
+                        $("#appointmentTableBody").append(row);
                         rowsAdded = true;
                     }
                 });
+
                 // If no rows were added, display a message indicating no results found
                 if (!rowsAdded) {
-                    $("#staffTableBody").append("<tr><td colspan='11'>No results found</td></tr>");
+                    $("#appointmentTableBody").append("<tr><td colspan='11'>No results found</td></tr>");
                 }
             },
             error: function (xhr, status, error) {
@@ -84,28 +96,28 @@
         refreshContent();
     }
 
-    function confirmDelete(staffId) {
-        if (confirm("Are you sure you want to delete this user?")) {
+    function confirmDelete(appointmentId) {
+        if (confirm("Are you sure you want to cancel this appointment?")) {
             $.ajax({
-                url: "DeleteStaff",
+                url: "ManageAppointment",
                 method: "POST",
-                data: {id: staffId},
+                data: {id: appointmentId},
                 success: function (response) {
                     // Check if response contains an error message
                     if (response) {
                         // Check which error
                         switch (response[0]) {
                             case "0":
-                                alert("Delete success.");
+                                alert("Cancel success.");
                                 break;
                             case "-1":
-                                alert("Cannot delete self.");
+                                alert("Unable to process request. Appointment is already complete.");
                                 break;
                             case "-2":
-                                alert("Cannot delete someone same level with you.");
+                                alert("Unable to process request. Appointment is already cancelled.");
                                 break;
                             default:
-                                alert("Unknown error when deleting data.");
+                                alert("Unknown error when cancelling appointment.");
                         }
                     }
                     // Refresh table
@@ -127,20 +139,20 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Staff Management</title>
+        <title>Appointment Management</title>
     </head>
     <body>
         <a href="index.jsp">< Back</a>
-        <h1>Staff Management Dashboard</h1>
+        <h1>Appointment Dashboard</h1>
         <div>
             <!-- Description -->
-            <p>This is the staff management dashboard. You can manage staff members here.</p>
+            <p>This is the appointment management dashboard. You can manage vets' appointments here.</p>
             <!-- Add button -->
-            <button onclick="location.href = 'Register?addStaff=true'">Add Staff</button>
+            <button onclick="location.href = 'addAppointment.jsp'">Add Appointment</button>
         </div>
         <hr/>
         <div>
-            <input type="text" id="searchInput" placeholder="Search by name...">
+            <input type="text" id="searchInput" placeholder="Search by customer or pet name...">
             <button value="searchSubmit" type="button" onclick=refreshContent()>Search</button>
             <button value="searchReset" type="reset" onclick=resetContent()()>Reset</button>
             <br/><br/>
@@ -149,20 +161,19 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Gender</th>
-                        <th>Phone No</th>
-                        <th>Date of Birth</th>
-                        <th>Role ID</th>
+                        <th>Owner Name</th>
+                        <th>Pet Name</th>
+                        <th>Pet Type</th>
+                        <th>Time Slot</th>
+                        <th>Staff Name</th>
                         <th>Status</th>
                         <th>Created Date</th>
                         <th>Updated Date</th>
                         <th>Edit</th>
-                        <th>Delete</th>
+                        <th>Cancel</th>
                     </tr>
                 </thead>
-                <tbody id="staffTableBody"></tbody>
+                <tbody id="appointmentTableBody"></tbody>
             </table>
         </div>
     </body>

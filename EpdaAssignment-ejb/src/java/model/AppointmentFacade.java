@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.json.JsonObject;
@@ -94,6 +95,40 @@ public class AppointmentFacade extends AbstractFacade<Appointment> {
                 return a2.getSchedule().getTimeslot().compareTo(a1.getSchedule().getTimeslot());
             }
         });
+        return appointmentList;
+    }
+
+    public List<Appointment> sortByStatus(List<Appointment> appointmentList) {
+        // Define a custom comparator
+        Comparator<Appointment> statusComparator = new Comparator<Appointment>() {
+            @Override
+            public int compare(Appointment a1, Appointment a2) {
+                // Order of status (Pending vet, scheduled, completed, cancelled)
+                int[] statusOrder = {1, 2, 0, 3};
+
+                // Get the index of each appointment's status in the statusOrder array
+                int indexA1 = getStatusIndex(a1.getStatus(), statusOrder);
+                int indexA2 = getStatusIndex(a2.getStatus(), statusOrder);
+
+                // Compare the indexes to determine the order
+                return Integer.compare(indexA1, indexA2);
+            }
+
+            // Helper method to get the index of a status in the statusOrder array
+            private int getStatusIndex(int status, int[] statusOrder) {
+                for (int i = 0; i < statusOrder.length; i++) {
+                    if (statusOrder[i] == status) {
+                        return i;
+                    }
+                }
+                // If status is not found in the statusOrder array, return a large value to push it to the end
+                return statusOrder.length;
+            }
+        };
+
+        // Sort the appointmentList using the custom comparator
+        Collections.sort(appointmentList, statusComparator);
+
         return appointmentList;
     }
 }

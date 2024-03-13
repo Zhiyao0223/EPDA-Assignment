@@ -1,12 +1,21 @@
 package controller;
 
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
+import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import model.Appointment;
+import model.MedicalReport;
+import model.MedicalReportFacade;
+import model.Users;
+import service.TableName;
+import service.Validation;
 
 /**
  *
@@ -15,21 +24,68 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet(name = "ViewMedicalReport", urlPatterns = {"/ViewMedicalReport"})
 public class ViewMedicalReport extends HttpServlet {
 
+    @EJB
+    private MedicalReportFacade medicalReportFacade;
+
+    // Process add prognosis update
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+
+        // Set constant variable
+        final int maxPrognosisChar = 250;
+
+        // Get POST parameters
+        String inputPrognosis = request.getParameter("prognosis");
+        Long reportId = Long.parseLong(request.getParameter("reportId"));
+
+        // Get current logined user
+        Users currentUser = (Users) request.getSession().getAttribute("user");
+
         try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet ViewMedicalReport</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet ViewMedicalReport at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+            try {
+                if (Validation.isEmpty(inputPrognosis)) {
+                    throw new Exception("-1");
+                } else if (Validation.isExceedMaxCharacter(inputPrognosis, maxPrognosisChar)) {
+                    throw new Exception("-2");
+                }
+
+                // Execute update on db
+                medicalReportFacade.addPrognosis(inputPrognosis, reportId, TableName.MedicalReport.name());
+
+                response.sendRedirect("viewMedicalReport.jsp?addPrognosisSuccess=true");
+            } catch (Exception e) {
+                request.getRequestDispatcher("viewMedicalReport.jsp").forward(request, response);
+                out.println(getErrorMessage(e.getMessage()));
+            }
         }
+    }
+
+    protected String getErrorMessage(String errCode) {
+        switch (errCode) {
+            case "-1":
+                return "Input cannot be empty.";
+            case "-2":
+                return "Cannot exceed 250 characters";
+            default:
+                return "Unknown error.";
+        }
+    }
+
+    protected void retrieveMedicalReportData(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        Users currentUser = (Users) request.getSession().getAttribute("user");
+        List<MedicalReport> reports = medicalReportFacade.getMedicalReport(currentUser.getId());
+
+        // Only sort if have var
+        if (reports.size() > 1) {
+            reports = medicalReportFacade.sortByStatus(reports);
+        }
+
+        // Set response content type to JSON
+        response.setContentType("application/json");
+
+        // Write JSON to response
+        response.getWriter().write(new Gson().toJson(reports));
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -44,7 +100,7 @@ public class ViewMedicalReport extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        retrieveMedicalReportData(request, response);
     }
 
     /**

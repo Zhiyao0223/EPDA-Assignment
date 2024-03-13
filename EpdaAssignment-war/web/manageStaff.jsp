@@ -44,6 +44,7 @@
                         var status = staff.status == 0 ? "Active" :
                                 staff.status == 1 ? "Pending Approval" :
                                 staff.status == 2 ? "Suspended" : "Deleted";
+
                         // Create a delete button for each row with a confirmation dialog
                         var editButton = "<button type='submit'><i class='fa fa-edit' style='font-size:20px;'></i></button>";
                         var deleteButton = "<button onclick='confirmDelete(" + staff.id + ")'><i class='fa fa-trash' style='font-size:20px;'></i></button>";
@@ -87,7 +88,7 @@
     function confirmDelete(staffId) {
         if (confirm("Are you sure you want to delete this user?")) {
             $.ajax({
-                url: "DeleteStaff",
+                url: "ManageStaff",
                 method: "POST",
                 data: {id: staffId},
                 success: function (response) {

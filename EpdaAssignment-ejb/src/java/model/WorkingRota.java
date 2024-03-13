@@ -7,6 +7,8 @@ package model;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Iterator;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -42,6 +44,9 @@ public class WorkingRota implements Serializable {
 
     @Column(name = "updated_date")
     private Timestamp updatedDate;
+
+    public WorkingRota() {
+    }
 
     public Long getId() {
         return id;
