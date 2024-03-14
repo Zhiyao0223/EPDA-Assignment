@@ -15,7 +15,6 @@
     </head>
     <body>
         <a href="${applicationScope.isAddStaff != null ?'manageStaff.jsp' : 'login.jsp'}">< Back</a>
-        <br><br><br>
         <h1>Registration</h1>
         <form action="Register" method="POST">
             <input type="text" hidden name="isAddStaff" value="${applicationScope.isAddStaff}">

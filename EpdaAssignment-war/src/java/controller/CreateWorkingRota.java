@@ -1,6 +1,8 @@
 package controller;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
@@ -14,7 +16,12 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import model.Expertise;
+import model.ExpertiseFacade;
+import model.Users;
+import model.UsersFacade;
 import model.Vet;
+import model.WorkingRota;
 import model.WorkingRotaFacade;
 import service.Util;
 
@@ -26,14 +33,49 @@ import service.Util;
 public class CreateWorkingRota extends HttpServlet {
 
     @EJB
+    private ExpertiseFacade expertiseFacade;
+
+    @EJB
+    private UsersFacade usersFacade;
+
+    @EJB
     private WorkingRotaFacade workingRotaFacade;
 
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+    protected void getAllTimetable(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
+        // Used to store both list and return to JSP
+        JsonObject combinedJson = new JsonObject();
 
+        List<WorkingRota> workingRotaList = workingRotaFacade.getActiveRota();
+        List<Expertise> expertiseList = expertiseFacade.findAll();
+
+        // Convert Working Rota list to JSON array
+        JsonArray scheduleJsonArray = new JsonArray();
+        for (WorkingRota singleSchedule : workingRotaList) {
+            JsonObject scheduleJson = new JsonObject();
+            scheduleJson.addProperty("id", singleSchedule.getId());
+            scheduleJson.addProperty("staffId", singleSchedule.getStaffId().getId());
+            scheduleJson.addProperty("staffName", singleSchedule.getStaffId().getName());
+            scheduleJson.addProperty("timeslots", Util.timestampToDateTimeString(singleSchedule.getTimeslot()));
+            scheduleJsonArray.add(scheduleJson);
         }
+        combinedJson.add("schedule", scheduleJsonArray);
+
+        // Convert expertise list to JSON array
+        JsonArray expertiseJsonArray = new JsonArray();
+        for (Expertise expertise : expertiseList) {
+            JsonObject expertiseJson = new JsonObject();
+            expertiseJson.addProperty("staffId", expertise.getVetID().getId());
+            expertiseJson.addProperty("staffName", expertise.getVetID().getName());
+            expertiseJson.addProperty("animalTypeId", expertise.getAnimalType().getId());
+            expertiseJson.addProperty("animalTypeName", expertise.getAnimalType().getDescription());
+            expertiseJsonArray.add(expertiseJson);
+        }
+        combinedJson.add("expertise", expertiseJsonArray);
+
+        // Set response content type to JSON
+        response.setContentType("application/json");
+        response.getWriter().write(combinedJson.toString());
     }
 
     protected void generateTimetable(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -45,13 +87,28 @@ public class CreateWorkingRota extends HttpServlet {
         for (Map.Entry<String, List<Vet>> entry : workingRota.entrySet()) {
             String day = entry.getKey();
             List<Vet> vetsForDay = entry.getValue();
-//
-//            System.out.println(day + ":");
+
             for (Vet vet : vetsForDay) {
-                vet.setTimeslot(randomGenerateAppointmentTime(tmpDate));
-//                System.out.println("Vet: " + vet.getName());
-//                System.out.println("Expertise Areas: " + String.join(", ", vet.getExpertiseAreas()));
-//                System.out.println();
+                // Generate two timeslot
+                System.out.println("Date: " + tmpDate);
+                vet.setTimeslot(randomGenerateAppointmentTime(tmpDate), 0);
+
+                // Loop to continous generate timeslot in case
+                Timestamp tmp;
+                while (true) {
+                    tmp = randomGenerateAppointmentTime(tmpDate);
+
+                    if (!tmp.equals(vet.getTimeslots()[0])) {
+                        System.out.println(tmp + "," + vet.getTimeslots()[0]);
+                        break;
+                    }
+                }
+                vet.setTimeslot(tmp, 1);
+
+                // Save into db
+                Users tmpVet = usersFacade.find(vet.getVetId());
+                workingRotaFacade.create(new WorkingRota(tmpVet, vet.getTimeslots()[0]));
+                workingRotaFacade.create(new WorkingRota(tmpVet, vet.getTimeslots()[1]));
             }
             // Add one day to tmpDate
             tmpDate = Util.addDaysToDate(tmpDate, 1);
@@ -104,7 +161,7 @@ public class CreateWorkingRota extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        generateTimetable(request, response);
+        getAllTimetable(request, response);
     }
 
     /**
@@ -118,7 +175,7 @@ public class CreateWorkingRota extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        generateTimetable(request, response);
     }
 
     /**

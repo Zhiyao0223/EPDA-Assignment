@@ -1,6 +1,7 @@
 package model;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,25 +10,36 @@ import java.util.List;
  */
 public class Vet {
 
+    private Long vetId;
     private String name;
     private List<String> expertiseAreas;
-    private Timestamp timeslot;
+    private Timestamp[] timeslots;
 
-    public Vet(String name, List<String> expertiseAreas) {
+    public Vet(Long vetId, String name, List<String> expertiseAreas) {
+        this.vetId = vetId;
         this.name = name;
         this.expertiseAreas = expertiseAreas;
+        this.timeslots = new Timestamp[2];
     }
 
     public void addExpertise(String animalType) {
         this.expertiseAreas.add(animalType);
     }
 
-    public Timestamp getTimeslot() {
-        return timeslot;
+    public Long getVetId() {
+        return vetId;
     }
 
-    public void setTimeslot(Timestamp timeslot) {
-        this.timeslot = timeslot;
+    public void setVetId(Long vetId) {
+        this.vetId = vetId;
+    }
+
+    public Timestamp[] getTimeslots() {
+        return timeslots;
+    }
+
+    public void setTimeslot(Timestamp timeslot, int index) {
+        this.timeslots[index] = timeslot;
     }
 
     public String getName() {

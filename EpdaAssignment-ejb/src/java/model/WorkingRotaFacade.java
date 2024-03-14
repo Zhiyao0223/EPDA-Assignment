@@ -49,6 +49,24 @@ public class WorkingRotaFacade extends AbstractFacade<WorkingRota> {
         super(WorkingRota.class);
     }
 
+    // This function used to return all rota that havnt past
+    public List<WorkingRota> getActiveRota() {
+        // Get the current date and time
+        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+
+        List<WorkingRota> tmpList = findAll();
+
+        // Remove past schedule
+        Iterator<WorkingRota> iterator = tmpList.iterator();
+        while (iterator.hasNext()) {
+            WorkingRota singleSchedule = iterator.next();
+            if (singleSchedule.getTimeslot().before(currentTimestamp)) {
+                iterator.remove();
+            }
+        }
+        return tmpList;
+    }
+
     public Timestamp getLatestRowTimestamp() {
         List<WorkingRota> tmpList = findAll();
         return tmpList.get(tmpList.size() - 1).getTimeslot();
@@ -80,7 +98,7 @@ public class WorkingRotaFacade extends AbstractFacade<WorkingRota> {
         for (Expertise expertise : expertises) {
             long vetId = expertise.getVetID().getId();
 
-            Vet vet = vetMap.getOrDefault(vetId, new Vet(getVetName(vets, vetId), new ArrayList<>()));
+            Vet vet = vetMap.getOrDefault(vetId, new Vet(vetId, getVetName(vets, vetId), new ArrayList<>()));
             vet.addExpertise(expertise.getAnimalType().getDescription());
             vetMap.put(vetId, vet);
         }
@@ -131,7 +149,7 @@ public class WorkingRotaFacade extends AbstractFacade<WorkingRota> {
             List<Vet> dayVets = workingRota.get(day);
 
             // Assign vets to the current day ensuring coverage of expertise areas
-            while (dayVets.size() < 3 || countCoveredExpertise(dayVets) < NUM_EXPERTISE) {
+            while ((dayVets.size() < 3 || countCoveredExpertise(dayVets) < NUM_EXPERTISE) && dayVets.size() < 4) {
                 Vet vet = getRandomVet(vets);
                 if (!dayVets.contains(vet)) {
                     dayVets.add(vet);

@@ -48,6 +48,15 @@ public class WorkingRota implements Serializable {
     public WorkingRota() {
     }
 
+    // Used in create schedule
+    public WorkingRota(Users tmpStaffId, Timestamp tmpTimeslot) {
+        this.staffId = tmpStaffId;
+        this.timeslot = tmpTimeslot;
+        this.createdDate = new Timestamp(System.currentTimeMillis());
+        this.updatedDate = new Timestamp(System.currentTimeMillis());
+        this.status = 0;
+    }
+
     public Long getId() {
         return id;
     }
