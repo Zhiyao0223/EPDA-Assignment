@@ -14,11 +14,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import model.AnimalType;
 import model.AnimalTypeFacade;
+import model.Log;
+import model.LogAction;
+import model.LogFacade;
 import model.Pet;
 import model.PetFacade;
 import model.Users;
 import model.UsersFacade;
 import service.Util;
+import service.Validation;
 
 /**
  *
@@ -26,6 +30,9 @@ import service.Util;
  */
 @WebServlet(name = "AddCustomerPet", urlPatterns = {"/AddCustomerPet"})
 public class AddCustomerPet extends HttpServlet {
+
+    @EJB
+    private LogFacade logFacade;
 
     @EJB
     private PetFacade petFacade;
@@ -43,13 +50,24 @@ public class AddCustomerPet extends HttpServlet {
         Boolean isAddCustomer = request.getParameter("formType").equals("customer");
 
         try (PrintWriter out = response.getWriter()) {
-
             try {
                 Pet newPet;
                 Users newUser;
 
                 // Check if add pet or customer
                 if (isAddCustomer) {
+                    // Validate data
+                    if (Validation.isEmpty(request.getParameter("name")) || Validation.isEmpty(request.getParameter("email"))
+                            || Validation.isEmpty(request.getParameter("dob")) || Validation.isEmpty(request.getParameter("phone"))) {
+                        throw new Exception("-2");
+                    } else if (!Validation.isValidDateofBirth(request.getParameter("dob"))) {
+                        throw new Exception("-1");
+                    } else if (!Validation.isValidPhoneNumber(request.getParameter("phone"))) {
+                        throw new Exception("-3");
+                    } else if (usersFacade.findByAttribute("email", request.getParameter("email")) != null) {
+                        throw new Exception("-4");
+                    }
+
                     newUser = new Users(
                             request.getParameter("name"),
                             request.getParameter("email"),
@@ -58,6 +76,11 @@ public class AddCustomerPet extends HttpServlet {
                             request.getParameter("phone"));
                     usersFacade.create(newUser);
                 } else {
+                    // Validate data
+                    if (Validation.isEmpty(request.getParameter("name"))) {
+                        throw new Exception("-2");
+                    }
+
                     // Get owner
                     Users inputOwner = new Users();
                     inputOwner.setId(Long.parseLong(request.getParameter("userId")));
@@ -73,24 +96,17 @@ public class AddCustomerPet extends HttpServlet {
                             inputAnimalType);
                     petFacade.create(newPet);
                 }
+                Users currentUser = (Users) request.getSession().getAttribute("user");
+                String description = (isAddCustomer) ? "Generate new customer" : "Generate new pet";
+                logFacade.create(new Log(currentUser, description, LogAction.CREATE));
 
                 // Back to homepage if success
                 String webParam = (isAddCustomer) ? "addCustomerSuccess" : "addPetSuccess";
                 response.sendRedirect("index.jsp?" + webParam + "=true");
 
             } catch (Exception e) {
-                request.getRequestDispatcher("addCustomerPet.jsp").forward(request, response);
-                out.println(getErrorMessage(e.getMessage()));
+                response.sendRedirect("addCustomerPet.jsp?err=" + e.getMessage());
             }
-        }
-    }
-
-    protected String getErrorMessage(String errorCode) {
-        switch (errorCode) {
-            case "-1":
-                return "";
-            default:
-                return "Unknown Error.";
         }
     }
 

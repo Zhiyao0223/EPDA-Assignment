@@ -11,6 +11,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import model.Log;
+import model.LogAction;
+import model.LogFacade;
 import model.Users;
 import model.UsersFacade;
 import service.TableName;
@@ -23,6 +26,9 @@ import service.Validation;
  */
 @WebServlet(name = "editStaff", urlPatterns = {"/editStaff"})
 public class EditStaff extends HttpServlet {
+
+    @EJB
+    private LogFacade logFacade;
 
     @EJB
     private UsersFacade usersFacade;
@@ -57,15 +63,24 @@ public class EditStaff extends HttpServlet {
                     {"status", ""}
                 };
 
+                System.out.println(Validation.isValidDateofBirth(request.getParameter("dob")));
+
+                // Validate data
+                if (!Validation.isEmpty(request.getParameter("phone")) && !Validation.isValidPhoneNumber(request.getParameter("phone"))) {
+                    throw new Exception("-4");
+                } else if (!Validation.isEmpty(request.getParameter("dob")) && !Validation.isValidDateofBirth(request.getParameter("dob"))) {
+                    throw new Exception("-3");
+                }
+
                 // Compare changes
-                if (!request.getParameter("email").trim().equalsIgnoreCase(editUser.getEmail()) && !Validation.isEmpty(request.getParameter("email"))) {
+                if (!Validation.isEmpty(request.getParameter("email")) && !request.getParameter("email").trim().equalsIgnoreCase(editUser.getEmail())) {
                     appendedData[0][1] = request.getParameter("email");
 
                     editUser.setEmail(appendedData[0][1]);
                     System.out.println("email: " + appendedData[0][1]);
                     hasChange = true;
                 }
-                if (!request.getParameter("dob").equals(editUser.getDateOfBirth()) && !Validation.isEmpty(request.getParameter("dob"))) {
+                if (!Validation.isEmpty(request.getParameter("dob")) && !request.getParameter("dob").equals(editUser.getDateOfBirth())) {
                     appendedData[1][1] = request.getParameter("dob");
 
                     editUser.setDateOfBirth(appendedData[1][1]);
@@ -79,7 +94,7 @@ public class EditStaff extends HttpServlet {
                     System.out.println("gender: " + appendedData[2][1]);
                     hasChange = true;
                 }
-                if (!request.getParameter("phone").trim().equals(editUser.getPhoneNo()) && !Validation.isEmpty(request.getParameter("phone"))) {
+                if (!Validation.isEmpty(request.getParameter("phone")) && !request.getParameter("phone").trim().equals(editUser.getPhoneNo())) {
                     appendedData[3][1] = request.getParameter("phone");
 
                     editUser.setPhoneNo(appendedData[3][1]);
@@ -87,7 +102,7 @@ public class EditStaff extends HttpServlet {
                     hasChange = true;
                 }
                 System.out.println("Status:" + request.getParameter("status"));
-                if (!request.getParameter("status").trim().equals(String.valueOf(editUser.getStatus()))) {
+                if (!Validation.isEmpty(request.getParameter("status")) && !request.getParameter("status").trim().equals(String.valueOf(editUser.getStatus()))) {
                     appendedData[4][1] = request.getParameter("status");
 
                     editUser.setPhoneNo(appendedData[4][1]);
@@ -121,6 +136,8 @@ public class EditStaff extends HttpServlet {
 
                 // Update updated time for row also
                 usersFacade.refreshUpdatedDate(TableName.Users.name(), editUser.getId());
+                logFacade.create(new Log(currentUser, "Edit staff ID - " + editUser.getId(), LogAction.UPDATE));
+
                 response.sendRedirect("manageStaff.jsp?editSuccess=true");
             } catch (Exception e) {
                 request.getRequestDispatcher("editStaff.jsp").include(request, response);
@@ -136,6 +153,12 @@ public class EditStaff extends HttpServlet {
         switch (errCode) {
             case "-1":
                 return "No changes apply.";
+            case "-2":
+                return "Please enter all required field";
+            case "-3":
+                return "Invalid date of birth";
+            case "-4":
+                return "Invalid phone number format";
             default:
                 return "Unknown error.";
         }

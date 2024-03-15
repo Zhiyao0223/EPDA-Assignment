@@ -28,4 +28,7 @@ public class LogFacade extends AbstractFacade<Log> {
         super(Log.class);
     }
 
+    public void write(Log log) {
+        create(log);
+    }
 }

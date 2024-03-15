@@ -53,6 +53,15 @@ public class Expertise implements Serializable {
         this.updatedDate = new Timestamp(System.currentTimeMillis());
     }
 
+    // Used in registration
+    public Expertise(Users tmpUser, AnimalType tmpType) {
+        this.vetID = tmpUser;
+        this.animalType = tmpType;
+        this.status = 0;
+        this.createdDate = new Timestamp(System.currentTimeMillis());
+        this.updatedDate = new Timestamp(System.currentTimeMillis());
+    }
+
     public Long getId() {
         return expertiseID;
     }

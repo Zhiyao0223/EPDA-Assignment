@@ -38,7 +38,17 @@ public class Log implements Serializable {
     @Column(name = "created_date")
     private Timestamp createdDate;
 
+    @Column(name = "action")
+    private String action;
+
     public Log() {
+    }
+
+    public Log(Users userID, String description, LogAction action) {
+        this.userID = userID;
+        this.description = description;
+        this.action = action.name();
+        this.createdDate = new Timestamp(System.currentTimeMillis());
     }
 
     public Long getId() {

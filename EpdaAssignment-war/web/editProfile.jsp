@@ -8,38 +8,28 @@
 <%@page import="service.Util"%>
 <%@page import="model.Users"%>
 
+<%@include file="checkSession.jsp"%>
 <script>
     function openPasswordPopup() {
         document.getElementById("passwordPopup").style.display = "block";
     }
 
-    document.addEventListener("DOMContentLoaded", function () {
-        // Function to check if a query parameter is present in the URL
-        function hasQueryParam(paramName) {
-            var urlParams = new URLSearchParams(window.location.search);
-            return urlParams.has(paramName);
-        }
+    var urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has("changePassSuccess")) {
+        alert("Password change successfully");
+    }
 
-        // Function to check if a parameter is present in the session
-        function hasSessionParam(paramName) {
-            var paramValue = sessionStorage.getItem(paramName);
-            return paramValue !== null && paramValue !== undefined;
-        }
+    var isChangePass = "${requestScope.isChangePass}";
+    if (isChangePass === "true") {
+        openPasswordPopup();
+    }
 
-        // Check if change password
-        if (hasQueryParam("changePassSuccess")) {
-            alert("Password Changed");
-        }
-        // Check if change pasword error
-        else if (hasSessionParam("isChangePass")) {
-            openPasswordPopup();
-        }
-    });
+
 </script>
 
 <%
     // Get the gender value from the session scope
-    Users currentUser = (Users) session.getAttribute("user");
+    Users currentUser = (session != null) ? (Users) session.getAttribute("user") : null;
 
     // Define gender options
     String[][] genderOptions = {
@@ -59,7 +49,8 @@
         <h1>Edit Personal Profile</h1>
         <form action="editProfile" method="post">
             <label for="name">Name:</label>
-            <input type="text" id="name" name="name" value=${sessionScope.user.getName()} readonly>
+            <input type="text" id="name" name="name" style="background-color:  #f0f0f0;font-style: italic; cursor: auto"
+                   value=${sessionScope.user.getName()} readonly>
             <br><br>
 
             <label for="email">Email:</label>

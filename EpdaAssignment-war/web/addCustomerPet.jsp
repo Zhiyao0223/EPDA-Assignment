@@ -6,6 +6,7 @@
 
 <%@page import="model.Users"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@include file="checkSession.jsp"%>
 
 <%
     // Get the gender value from the session scope
@@ -28,6 +29,30 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has("err")) {
+            checkException(urlParams.get("err"));
+        }
+
+        function checkException(errCode) {
+            switch (errCode) {
+                case "-1":
+                    alert("Invalid date of birth");
+                    break;
+                case "-2":
+                    alert("Please fill all required field");
+                    break;
+                case "-3":
+                    alert("Invalid phone number format.");
+                    break;
+                case "-4":
+                    alert("Email is being registered before");
+                    break;
+                default:
+                    alert("Unknown Error.");
+            }
+        }
+
         // Toggle between customer and pet profile forms
         function toggleForm(formType) {
             var customerForm = document.getElementById("customer-form");
@@ -55,7 +80,6 @@
                     $.each(response.animalTypes, function (index, type) {
                         animalTypeSelect.append($("<option>").val(type.id).text(type.name));
                     });
-
                     var custList = $("#userId");
                     custList.append($("<option>").val("").text("Please Select").prop("selected", true).prop("disabled", true));
                     $.each(response.customers, function (index, type) {
@@ -130,7 +154,7 @@
             <select id="userId" name="userId" required></select>
             <br/><br/>
 
-            <label for="animalType">Type </label>
+            <label for="animalType">Type: </label>
             <select id="animalType" name="animalType" required></select>
             <br/><br/>
 

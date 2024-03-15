@@ -11,6 +11,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import model.AnimalType;
+import model.AnimalTypeFacade;
+import model.Expertise;
+import model.ExpertiseFacade;
 import model.Role;
 import model.RoleFacade;
 import model.Users;
@@ -25,6 +29,12 @@ import service.Validation;
 public class Register extends HttpServlet {
 
     @EJB
+    private ExpertiseFacade expertiseFacade;
+
+    @EJB
+    private AnimalTypeFacade animalTypeFacade;
+
+    @EJB
     private RoleFacade roleFacade;
 
     @EJB
@@ -34,6 +44,7 @@ public class Register extends HttpServlet {
     protected void retrieveRoleData(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // Retrieve all roles from the facade
         List<Role> roles = roleFacade.findAll();
+        List<AnimalType> animalTypes = animalTypeFacade.findAll();
 
         // Remove customer from registration
         Iterator<Role> iterator = roles.iterator();
@@ -61,6 +72,7 @@ public class Register extends HttpServlet {
 
         // Set DataCache in application scope
         servletContext.setAttribute("cachedRoles", roles);
+        servletContext.setAttribute("cacheAnimalTypes", animalTypes);
 
         // Check if come from add staff
         if (request.getParameter("addStaff") != null) {
@@ -81,13 +93,15 @@ public class Register extends HttpServlet {
 
         try (PrintWriter out = response.getWriter()) {
             try {
-
                 if (Validation.isEmpty(tmpUser.getName()) || Validation.isEmpty(tmpUser.getPassword()) || Validation.isEmpty(request.getParameter("role"))) {
                     throw new Exception("-2");
                 } // Check if input empty
                 else if (!tmpUser.getPassword().equals(request.getParameter("confirmPass"))) {
                     throw new Exception("-3");
                 } // Check if confirm pass same with original
+                else if (!Validation.isEmpty(request.getParameter("animalType1")) && request.getParameter("animalType1").equals(request.getParameter("animalType2"))) {
+                    throw new Exception("-4");
+                } // Check if select same expertise
 
                 // Set role
                 tmpUser.setRole(roleFacade.findByAttribute("description", request.getParameter("role").toLowerCase()));
@@ -104,6 +118,17 @@ public class Register extends HttpServlet {
 
                 // Create record in users table
                 usersFacade.create(tmpUser);
+
+                // Only execute if is vet
+                if (tmpUser.getRoleID().getId() == 3) {
+                    // Get new created userId
+                    tmpUser = usersFacade.findByAttribute("name", tmpUser.getName());
+                    expertiseFacade.create(new Expertise(tmpUser, animalTypeFacade.find(Long.parseLong(request.getParameter("animalType1")))));
+
+                    if (!Validation.isEmpty(request.getParameter("animalType2"))) {
+                        expertiseFacade.create(new Expertise(tmpUser, animalTypeFacade.find(Long.parseLong(request.getParameter("animalType2")))));
+                    }
+                }
 
                 // Go to login page
                 if (isAddStaff) {
@@ -135,6 +160,8 @@ public class Register extends HttpServlet {
                 return "Please enter the required field.";
             case "-3":
                 return "Password not match.";
+            case "-4":
+                return "Cannot select same expertise";
             default:
                 return "Unknown error.";
         }

@@ -46,6 +46,13 @@ public class EditProfile extends HttpServlet {
                     {"phoneNo", ""}
                 };
 
+                // Validate data
+                if (!Validation.isValidDateofBirth(request.getParameter("dob"))) {
+                    throw new Exception("-2");
+                } else if (!Validation.isValidPhoneNumber(request.getParameter("phone"))) {
+                    throw new Exception("-3");
+                }
+
                 // Compare changes
                 if (!request.getParameter("email").trim().equalsIgnoreCase(currentUser.getEmail()) && !Validation.isEmpty(request.getParameter("email"))) {
                     appendedData[0][1] = request.getParameter("email");
@@ -97,12 +104,12 @@ public class EditProfile extends HttpServlet {
                     } else {
                         usersFacade.updateByAttribute(TableName.Users.name(), currentUser.getId(), changes[0], changes[1]);
                     }
-
-                    // Replace session with new data
-                    request.getSession().setAttribute("user", currentUser);
-
-                    response.sendRedirect("index.jsp?updateSuccess=true");
                 }
+
+                // Replace session with new data
+                request.getSession().setAttribute("user", currentUser);
+
+                response.sendRedirect("index.jsp?updateSuccess=true");
 
             } catch (Exception e) {
                 request.getRequestDispatcher("editProfile.jsp").include(request, response);
@@ -118,6 +125,10 @@ public class EditProfile extends HttpServlet {
         switch (errCode) {
             case "-1":
                 return "No changes apply.";
+            case "-2":
+                return "Invalid date of birth. Must be older than 12 years old";
+            case "-3":
+                return "Invalid phone number";
             default:
                 return "Unknown error.";
         }

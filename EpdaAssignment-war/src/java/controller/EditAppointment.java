@@ -17,6 +17,9 @@ import model.Appointment;
 import model.AppointmentFacade;
 import model.Expertise;
 import model.ExpertiseFacade;
+import model.Log;
+import model.LogAction;
+import model.LogFacade;
 import model.MedicalReport;
 import model.MedicalReportFacade;
 import model.Pet;
@@ -34,6 +37,9 @@ import service.Validation;
  */
 @WebServlet(name = "EditAppointment", urlPatterns = {"/EditAppointment"})
 public class EditAppointment extends HttpServlet {
+
+    @EJB
+    private LogFacade logFacade;
 
     @EJB
     private MedicalReportFacade medicalReportFacade;
@@ -102,6 +108,7 @@ public class EditAppointment extends HttpServlet {
                     tmpReport.setAppointment(dbAppointment);
 
                     medicalReportFacade.create(tmpReport);
+                    logFacade.create(new Log(currentUser, "Create Medical Report", LogAction.CREATE));
                 }
 
                 // Loop through all changes and update one by one
@@ -124,6 +131,8 @@ public class EditAppointment extends HttpServlet {
                         appointmentFacade.updateByAttribute(TableName.Appointment.name(), dbAppointment.getId(), "status", Integer.parseInt(changes[1]));
                     }
                 }
+                logFacade.create(new Log(currentUser, "Modify appointment ID - " + dbAppointment.getId(), LogAction.UPDATE));
+
                 response.sendRedirect("manageAppointment.jsp?editSuccess=true");
             } catch (Exception e) {
                 response.sendRedirect("editAppointment.jsp?editId=" + dbAppointment.getId() + "&errCode=" + e.getMessage());

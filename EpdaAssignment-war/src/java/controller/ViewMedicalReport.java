@@ -11,6 +11,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import model.Appointment;
+import model.Log;
+import model.LogAction;
+import model.LogFacade;
 import model.MedicalReport;
 import model.MedicalReportFacade;
 import model.Users;
@@ -23,6 +26,9 @@ import service.Validation;
  */
 @WebServlet(name = "ViewMedicalReport", urlPatterns = {"/ViewMedicalReport"})
 public class ViewMedicalReport extends HttpServlet {
+
+    @EJB
+    private LogFacade logFacade;
 
     @EJB
     private MedicalReportFacade medicalReportFacade;
@@ -52,6 +58,7 @@ public class ViewMedicalReport extends HttpServlet {
 
                 // Execute update on db
                 medicalReportFacade.addPrognosis(inputPrognosis, reportId, TableName.MedicalReport.name());
+                logFacade.create(new Log(currentUser, "Add prognosis to medical report ID - " + request.getParameter("reportId"), LogAction.CREATE));
 
                 response.sendRedirect("viewMedicalReport.jsp?addPrognosisSuccess=true");
             } catch (Exception e) {

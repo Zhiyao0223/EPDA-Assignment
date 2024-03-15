@@ -10,6 +10,7 @@
 <%@page import="java.util.List"%>
 <%@page import="model.Users"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@include file="checkSession.jsp"%>
 
 <script>
     // Function to refetch database and filter by search

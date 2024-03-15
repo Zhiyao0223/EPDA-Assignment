@@ -12,6 +12,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import model.Appointment;
 import model.AppointmentFacade;
+import model.Log;
+import model.LogAction;
+import model.LogFacade;
 import model.Users;
 import service.TableName;
 
@@ -21,6 +24,9 @@ import service.TableName;
  */
 @WebServlet(name = "ManageAppointment", urlPatterns = {"/ManageAppointment"})
 public class ManageAppointment extends HttpServlet {
+
+    @EJB
+    private LogFacade logFacade;
 
     @EJB
     private AppointmentFacade appointmentFacade;
@@ -51,6 +57,9 @@ public class ManageAppointment extends HttpServlet {
             // Change status to cancel in db
             appointmentFacade.updateByAttribute(TableName.Appointment.name(), cancelAppointment.getId(), "status", 3);
             appointmentFacade.refreshUpdatedDate(TableName.Appointment.name(), cancelAppointment.getId());
+
+            logFacade.create(new Log(currentUser, "Cancel appointment ID - " + cancelAppointment.getId(), LogAction.DELETE));
+
         } catch (Exception e) {
             // Write JSON to response
             err[1] = e.getMessage();

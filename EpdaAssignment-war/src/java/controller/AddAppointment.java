@@ -17,6 +17,9 @@ import model.Appointment;
 import model.AppointmentFacade;
 import model.Expertise;
 import model.ExpertiseFacade;
+import model.Log;
+import model.LogAction;
+import model.LogFacade;
 import model.Pet;
 import model.PetFacade;
 import model.Users;
@@ -32,6 +35,9 @@ import service.Validation;
  */
 @WebServlet(name = "AddAppointment", urlPatterns = {"/AddAppointment"})
 public class AddAppointment extends HttpServlet {
+
+    @EJB
+    private LogFacade logFacade;
 
     @EJB
     private ExpertiseFacade expertiseFacade;
@@ -81,6 +87,8 @@ public class AddAppointment extends HttpServlet {
                 }
 
                 appointmentFacade.create(newAppointment);
+
+                logFacade.create(new Log(currentUser, "Create new appointment", LogAction.OTHER));
 
                 // Update working rota to booked status
                 workingRotaFacade.updateByAttribute(TableName.WorkingRota.name(), Long.parseLong(request.getParameter("timeslot")), "status", 1);

@@ -5,6 +5,8 @@
  */
 package model;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -42,7 +44,41 @@ public class UsersFacade extends AbstractFacade<Users> {
                 iterator.remove();
             }
         }
-        return allUsers;
+        return allUsers.size() > 1 ? sortByStatus(allUsers) : allUsers;
+    }
+
+    // Sort by status
+    public List<Users> sortByStatus(List<Users> userList) {
+        // Define a custom comparator
+        Comparator<Users> statusComparator = new Comparator<Users>() {
+            @Override
+            public int compare(Users u1, Users u2) {
+                // Order of status (Pending approval, active, suspended, deleted)
+                int[] statusOrder = {1, 0, 2, 3};
+
+                // Get the index of each appointment's status in the statusOrder array
+                int indexU1 = getStatusIndex(u1.getStatus(), statusOrder);
+                int indexU2 = getStatusIndex(u2.getStatus(), statusOrder);
+
+                // Compare the indexes to determine the order
+                return Integer.compare(indexU1, indexU2);
+            }
+
+            // Helper method to get the index of a status in the statusOrder array
+            private int getStatusIndex(int status, int[] statusOrder) {
+                for (int i = 0; i < statusOrder.length; i++) {
+                    if (statusOrder[i] == status) {
+                        return i;
+                    }
+                }
+                // If status is not found in the statusOrder array, return a large value to push it to the end
+                return statusOrder.length;
+            }
+        };
+
+        // Sort the userList using the custom comparator
+        Collections.sort(userList, statusComparator);
+        return userList;
     }
 
     // Retrieve customer only

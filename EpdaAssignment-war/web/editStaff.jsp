@@ -6,6 +6,7 @@
 
 <%@page import="model.Users"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@include file="checkSession.jsp"%>
 
 <%
     // Get the gender value from the session scope
@@ -38,7 +39,8 @@
         <form action="editStaff" method="post">
             <label for="name">Name:</label>
             <input type="text" id="userid" name="userid" value=${applicationScope.editUser.getUserID()} hidden>
-            <input type="text" id="name" name="name" value=${applicationScope.editUser.getName()} readonly>
+            <input type="text" id="name" name="name" style="background-color:  #f0f0f0;font-style: italic; cursor: auto"
+                   value=${applicationScope.editUser.getName()} readonly>
             <br><br>
 
             <label for="email">Email:</label>

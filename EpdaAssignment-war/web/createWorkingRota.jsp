@@ -6,6 +6,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@include file="checkSession.jsp"%>
 
 <script>
     function addRota() {

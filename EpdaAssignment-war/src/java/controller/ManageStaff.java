@@ -11,6 +11,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import model.Log;
+import model.LogAction;
+import model.LogFacade;
 import model.Users;
 import model.UsersFacade;
 import service.TableName;
@@ -21,6 +24,9 @@ import service.TableName;
  */
 @WebServlet(name = "ManageStaff", urlPatterns = {"/ManageStaff"})
 public class ManageStaff extends HttpServlet {
+
+    @EJB
+    private LogFacade logFacade;
 
     @EJB
     private UsersFacade usersFacade;
@@ -51,6 +57,8 @@ public class ManageStaff extends HttpServlet {
             // Change status to delete in db
             usersFacade.updateByAttribute(TableName.Users.name(), deletedUser.getId(), "status", 3);
             usersFacade.refreshUpdatedDate(TableName.Users.name(), deletedUser.getId());
+
+            logFacade.create(new Log(currentUser, "Soft delete user ID - " + deletedUser.getId(), LogAction.DELETE));
         } catch (Exception e) {
             // Write JSON to response
             err[1] = e.getMessage();

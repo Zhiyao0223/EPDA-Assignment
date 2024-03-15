@@ -59,7 +59,7 @@ public class ChangePassword extends HttpServlet {
                 response.sendRedirect("editProfile.jsp?changePassSuccess=true");
             } catch (Exception e) {
                 request.setAttribute("isChangePass", "true");
-                request.getRequestDispatcher("editProfile.jsp?isChangePass=true").include(request, response);
+                request.getRequestDispatcher("editProfile.jsp").include(request, response);
                 out.println(getErrorMessage(e.getMessage()));
             }
 

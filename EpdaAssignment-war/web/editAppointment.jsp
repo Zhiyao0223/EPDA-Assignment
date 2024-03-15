@@ -4,8 +4,8 @@
     Author     : USER
 --%>
 
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@include file="checkSession.jsp"%>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
@@ -190,7 +190,7 @@
                 <br/><br/>
 
                 <label for="totalFeeLabel">Total Fee: </label><br/>
-                <input type="number" id="totalFee" name="totalFee" min="1" >
+                <input type="number" id="totalFee" name="totalFee" min="1" max="1000">
                 <br/><br/>
             </div>
 

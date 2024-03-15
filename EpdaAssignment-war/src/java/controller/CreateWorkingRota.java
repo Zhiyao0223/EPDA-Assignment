@@ -18,6 +18,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import model.Expertise;
 import model.ExpertiseFacade;
+import model.Log;
+import model.LogAction;
+import model.LogFacade;
 import model.Users;
 import model.UsersFacade;
 import model.Vet;
@@ -31,6 +34,9 @@ import service.Util;
  */
 @WebServlet(name = "CreateWorkingRota", urlPatterns = {"/CreateWorkingRota"})
 public class CreateWorkingRota extends HttpServlet {
+
+    @EJB
+    private LogFacade logFacade;
 
     @EJB
     private ExpertiseFacade expertiseFacade;
@@ -113,6 +119,9 @@ public class CreateWorkingRota extends HttpServlet {
             // Add one day to tmpDate
             tmpDate = Util.addDaysToDate(tmpDate, 1);
         }
+        Users currentUser = (Users) request.getSession().getAttribute("user");
+        logFacade.create(new Log(currentUser, "Generate new working rota", LogAction.CREATE));
+
         // Set response content type to JSON
         response.setContentType("application/json");
 
